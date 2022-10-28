@@ -10,6 +10,7 @@
 </template>
 <style lang="scss">
 .settings-container {
+    margin-top: 40px;
     display: grid;
     grid-template-columns: 200px 1fr;
     padding-left: 20px;
@@ -18,8 +19,11 @@
     aside {
         display: flex;
         flex-direction: column;
+        gap: 8px;
 
         .selection {
+            border-radius: 8px;
+            padding: 8px;
             text-decoration: none;
             color: var(--color-text);
             text-align: left;
@@ -27,15 +31,19 @@
             font-weight: 600;
             position: relative;
 
-            &::after {
-                position: absolute;
-                left: 0;
-                content: '';
-                background-color: var(--color-text);
-                width: 100%;
-                bottom: -9px;
-                height: 3px;
+            &:hover {
+                background-color: rgba($color: #000000, $alpha: 0.06);
             }
+
+            // &::after {
+            //     position: absolute;
+            //     left: 0;
+            //     content: '';
+            //     background-color: var(--color-text);
+            //     width: 100%;
+            //     bottom: -9px;
+            //     height: 3px;
+            // }
         }
     }
 }

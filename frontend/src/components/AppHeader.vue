@@ -73,9 +73,9 @@ header {
     // gap: 5px;
     z-index: 99;
 
-    &.onShadow {
-        box-shadow: var(--shadow);
-    }
+    // &.onShadow {
+    //     box-shadow: var(--shadow);
+    // }
 
     .link {
         height: 48px;
