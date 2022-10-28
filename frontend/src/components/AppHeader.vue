@@ -1,12 +1,12 @@
 <template>
-    <header>
+    <header :class="{ onShadow: !searchFocused }">
         <router-link class="link" to="/">Главная</router-link>
         <div class="link dropdown" @click.self="createToggle = !createToggle" v-on-click-outside="closeDropdown">
             Создать
             <FontAwesomeIcon icon="chevron-down" />
             <div :class="['list', { active: createToggle }]">
-                <router-link class="item" to="">Создать идею</router-link>
-                <router-link class="item" to="">Создать арт</router-link>
+                <router-link class="item" to="/new-idea">Создать идею</router-link>
+                <router-link class="item" to="/new-art">Создать арт</router-link>
             </div>
         </div>
         <div class="search">
@@ -14,17 +14,26 @@
                 <FontAwesomeIcon icon="magnifying-glass" />
             </div>
             <input placeholder="Поиск" type="text" @focus="searchFocused = true" @blur="searchFocused = false">
+            <div class="results-list" v-if="searchFocused">
+                adsasdasd
+            </div>
         </div>
         <div class="button">
             <FontAwesomeIcon icon="bell" />
+        </div>
+        <router-link to="/settings" class="button">
+            <FontAwesomeIcon icon="user" />
+        </router-link>
+        <div class="button menu">
+            <FontAwesomeIcon icon="chevron-down" />
         </div>
     </header>
 </template>
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faChevronDown, faMagnifyingGlass, faBell } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faMagnifyingGlass, faBell, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-library.add(faChevronDown, faMagnifyingGlass, faBell);
+library.add(faChevronDown, faMagnifyingGlass, faBell, faUser);
 import { vOnClickOutside } from "@vueuse/components";
 
 export default {
@@ -37,10 +46,15 @@ export default {
     },
     methods: {
         closeDropdown() {
-            console.log('asdas')
             if (this.createToggle) {
                 this.createToggle = false;
             }
+        }
+    },
+    watch: {
+        searchFocused(value) {
+            console.log(value)
+            this.$emit('searchOpened', value)
         }
     },
     directives: {
@@ -55,9 +69,13 @@ header {
     height: 80px;
     display: flex;
     align-items: center;
-    box-shadow: var(--shadow);
     padding: 4px 16px;
-    gap: 5px;
+    // gap: 5px;
+    z-index: 99;
+
+    &.onShadow {
+        box-shadow: var(--shadow);
+    }
 
     .link {
         height: 48px;
@@ -125,6 +143,8 @@ header {
         flex-grow: 1;
         display: flex;
         gap: 10px;
+        position: relative;
+        margin-inline: 10px;
 
         .icon {
             @include helpers.flex-center;
@@ -139,6 +159,17 @@ header {
             height: 100%;
             width: 100%;
         }
+
+        .results-list {
+            position: absolute;
+            top: 100%;
+            background-color: var(--baby-powder);
+            left: 0;
+            width: 100%;
+            min-height: 400px;
+            border-radius: 0px 0px 24px 24px;
+            padding: 16px;
+        }
     }
 
     .button {
@@ -148,6 +179,7 @@ header {
         border-radius: 50%;
         background-color: transparent;
         transition: background-color .2s;
+        color: var(--color-gray-roboflow-500);
 
         svg {
             height: 24px;
@@ -156,6 +188,18 @@ header {
 
         &:hover {
             background-color: var(--color-gray-roboflow-200);
+        }
+
+        &.menu {
+            height: 24px;
+            width: 24px;
+
+            cursor: pointer;
+
+            svg {
+                height: 14px;
+                width: 14px;
+            }
         }
     }
 }

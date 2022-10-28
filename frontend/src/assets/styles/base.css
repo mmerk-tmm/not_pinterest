@@ -15,7 +15,7 @@
   --color-text-icon-subtle: var(--color-gray-roboflow-500);
   --color-background: var(--baby-powder);
   --shadow: rgb(0 0 0 / 10%) 0px 8px 8px -8px;
-  --elevation-floating: 0 0 8px rgba(0,0,0,0.1);
+  --elevation-floating: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -30,11 +30,19 @@
 }
 
 body {
-  min-height: 100vh;
   margin: 0px;
   padding: 0px;
   color: var(--color-text);
   background: var(--color-background);
   transition: color 0.2s, background-color 0.2s;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", メイリオ, Meiryo, "ＭＳ Ｐゴシック", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+#app {
+  display: flex;
+  flex-direction: column;
+}
+html,
+body,
+#app {
+  height: 100%;
 }

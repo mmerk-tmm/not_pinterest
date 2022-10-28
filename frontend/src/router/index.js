@@ -6,8 +6,19 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: 'Главная',
       component: HomeView
+    },
+    {
+      path: '/settings',
+      name: 'Настройки',
+      component: () => import('../views/SettingsView.vue'),
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'Страница не найдена',
+      alias: '/404',
+      component: () => import('../views/404.vue')
     },
   ]
 })
