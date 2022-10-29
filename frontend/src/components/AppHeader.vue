@@ -129,7 +129,7 @@ header {
             }
         }
 
-        &.router-link-active {
+        &.router-link-active,&:has(.router-link-active) {
             color: var(--color-text-rev);
             background-color: var(--color-black-cosmicore-900);
         }
