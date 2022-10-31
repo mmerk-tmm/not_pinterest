@@ -24,7 +24,6 @@
             word-wrap: break-word;
             font-family: var( --font-family-default-latin);
         }
-
     }
 }
 </style>

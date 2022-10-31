@@ -24,8 +24,13 @@
         <router-link to="/settings" class="button">
             <FontAwesomeIcon icon="user" />
         </router-link>
-        <div class="button menu">
+        <div :class="['button', 'menu', { mouseDown: menuButtonPushed }], { active: optionsOpen }"
+            @click="optionsOpen = !optionsOpen" @mousedown="menuButtonPushed = true"
+            @mouseup="menuButtonPushed = false">
             <FontAwesomeIcon icon="chevron-down" />
+        </div>
+        <div class="options" v-if="optionsOpen">
+            asdadsda
         </div>
     </header>
 </template>
@@ -42,6 +47,8 @@ export default {
         return {
             createToggle: false,
             searchFocused: false,
+            menuButtonPushed: false,
+            optionsOpen: false,
         }
     },
     methods: {
@@ -70,8 +77,8 @@ header {
     display: flex;
     align-items: center;
     padding: 4px 16px;
-    // gap: 5px;
     z-index: 99;
+    position: relative;
 
     // &.onShadow {
     //     box-shadow: var(--shadow);
@@ -96,7 +103,6 @@ header {
         &.dropdown {
             user-select: none;
             position: relative;
-
 
             .list {
                 background-color: var(--baby-powder);
@@ -129,7 +135,8 @@ header {
             }
         }
 
-        &.router-link-active,&:has(.router-link-active) {
+        &.router-link-active,
+        &:has(.router-link-active) {
             color: var(--color-text-rev);
             background-color: var(--color-black-cosmicore-900);
         }
@@ -191,6 +198,11 @@ header {
         }
 
         &.menu {
+            &.mouseDown {
+                scale: 0.9;
+            }
+
+            transition: 0.1s scale;
             height: 24px;
             width: 24px;
 
@@ -200,6 +212,26 @@ header {
                 height: 14px;
                 width: 14px;
             }
+        }
+    }
+
+    .options {
+        display: flex;
+        position: absolute;
+        right: 0;
+        margin: 8px;
+        top: 60px;
+        max-width: 360px;
+        width: 100%;
+        box-shadow: var(--elevation-floating);
+        min-height: 40px;
+        min-width: 180px;
+        padding: 8px;
+        background-color: var(--baby-powder);
+        border-radius: 16px;
+
+        .items {
+            .item {}
         }
     }
 }
