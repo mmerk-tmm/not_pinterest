@@ -30,7 +30,14 @@
             <FontAwesomeIcon icon="chevron-down" />
         </div>
         <div class="options" v-if="optionsOpen">
-            asdadsda
+            <div class="items">
+                <div class="item">Настройки</div>
+                <div class="item">Настройки</div>
+                <div class="item">Настройки</div>
+                <div class="item">Настройки</div>
+                <div class="item">Настройки</div>
+                <div class="item">Настройки</div>
+            </div>
         </div>
     </header>
 </template>
@@ -231,7 +238,20 @@ header {
         border-radius: 16px;
 
         .items {
-            .item {}
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+
+            .item {
+                border-radius: 8px;
+                padding: 8px;
+                font-family: var(--font-family-default-latin);
+                font-weight: 600;
+
+                &:hover {
+                    background-color: var(--color-gray-roboflow-200);
+                }
+            }
         }
     }
 }
