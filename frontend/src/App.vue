@@ -20,6 +20,11 @@ export default {
     onSearchOpended(value) {
       this.isSearchOpended = value;
     }
+  },
+  provide: {
+    runValidation(){
+      return false
+    }
   }
 }
 </script>

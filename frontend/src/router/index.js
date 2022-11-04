@@ -18,6 +18,18 @@ const router = createRouter({
       path: '/settings',
       name: 'Настройки',
       component: () => import('../views/SettingsView.vue'),
+      children: [
+        {
+          path: 'edit-profile',
+          name: 'Ректировать профиль',
+          component: () => import('../components/EditProfile.vue'),
+        },
+        {
+          path: 'personal-information',
+          name: 'Персональные данные',
+          component: () => import('../components/PersonalInformation.vue'),
+        }
+      ]
     },
     {
       path: '/:pathMatch(.*)*',
