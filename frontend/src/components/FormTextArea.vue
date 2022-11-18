@@ -51,7 +51,7 @@ export default {
 .formkit-inner {
 
     &.focused {
-        box-shadow: 0 0 0 1px black !important;
+        box-shadow: 0 0 0 1px var(--fields-border-color) !important;
     }
 
     textarea {

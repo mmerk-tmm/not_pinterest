@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from .endpoints import auth, user, files
+from backend.api.api_v1.endpoints import auth, user, files
 
 api_v1_router = APIRouter()
 api_v1_router.include_router(auth.router)

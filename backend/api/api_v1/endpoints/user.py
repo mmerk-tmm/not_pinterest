@@ -1,14 +1,14 @@
 from fastapi import Depends, APIRouter, status, UploadFile, File, HTTPException
 from fastapi_jwt_auth import AuthJWT
-from helpers.files import save_file
-from helpers.images import set_picture
-from schemas.user import UserInfo, UserModifiableForm
-from schemas.error import HTTP_401_UNAUTHORIZED
-from crud.crud_user import user_cruds
-router = APIRouter()
+from backend.helpers.files import save_file
+from backend.helpers.images import set_picture
+from backend.responses import AUTH_REQUIRED_401, UNAUTHORIZED_401
+from backend.schemas.user import UserInfo, UserModifiableForm
+from backend.crud.crud_user import user_cruds
+router = APIRouter(tags=['Профили пользователей'])
 
 
-@router.put('/me', responses={status.HTTP_401_UNAUTHORIZED: {"model": HTTP_401_UNAUTHORIZED}}, response_model=UserInfo)
+@router.put('/me', responses={**UNAUTHORIZED_401}, response_model=UserInfo)
 def update_user_data(UserData: UserModifiableForm = Depends(UserModifiableForm), userPicture: UploadFile = File(default=False), Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()
     current_user_id = Authorize.get_jwt_subject()
@@ -25,14 +25,14 @@ def update_user_data(UserData: UserModifiableForm = Depends(UserModifiableForm),
     return user_data
 
 
-@router.get('/me', responses={status.HTTP_401_UNAUTHORIZED: {"model": HTTP_401_UNAUTHORIZED}}, response_model=UserInfo)
+@router.get('/me', responses={**AUTH_REQUIRED_401}, response_model=UserInfo)
 def get_user_info(Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()
     current_user_id = Authorize.get_jwt_subject()
     user = user_cruds.get_user_by_id(current_user_id)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="неправильное имя пользователя или пароль")
+                            detail="Необходимо авторизоваться")
     user_data = user.as_dict()
     user_data = set_picture(user_data, user.picture)
     return user_data

@@ -1,24 +1,16 @@
-from datetime import datetime
-from typing import List
-from sqlalchemy.orm import Session
-from helpers.roles import set_status
-from helpers.images import set_picture
-from core.config import settings
-from helpers.files import add_url
-from crud.crud_file import FileCruds
-from db.session import SessionLocal
-from schemas.user import UserAuth, UserModifiable, UserRegister
-from models.user import File, User
+from backend.crud.crud_file import file_cruds
+from backend.db.session import session
+from backend.models.file import File
+from backend.schemas.user import UserAuth, UserModifiable, UserRegister
+from backend.models.user import User
 from passlib.context import CryptContext
 from fastapi.encoders import jsonable_encoder
-from fastapi import HTTPException, status
-from sqlalchemy import select
 
 
 class UserCruds:
     def __init__(self) -> None:
         self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-        self.db: Session = SessionLocal()
+        self.db = session
 
     def create(self, model):
         self.db.add(model)
@@ -56,12 +48,12 @@ class UserCruds:
         data_obj = new_user_data.dict()
         remove_picture = data_obj.pop('remove_picture')
         for var, value in data_obj.items():
-            setattr(user, var, value) if value is not None else None
-        if (userPic and user.picture) or remove_picture:
-            FileCruds(self.db).delete_file(user.picture)
-        if userPic:
+            setattr(user, var, value)
+        if remove_picture:
+            file_cruds.delete_picture(user.picture)
+        elif userPic:
             if user.picture:
-                FileCruds(self.db).delete_file(user.picture)
+                file_cruds.delete_picture(user.picture)
             user.picture = self.create(userPic)
         self.db.add(user)
         self.db.commit()
@@ -70,9 +62,9 @@ class UserCruds:
 
     def is_admin(self, user_id):
         db_user = self.get_user_by_id(user_id=user_id)
-        if not db_user or db_user.is_superuser:
-            return
-        return db_user
+        if not db_user:
+            raise Exception('Пользователь не найден')
+        return db_user.is_superuser
 
 
 user_cruds = UserCruds()

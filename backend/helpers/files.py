@@ -4,10 +4,11 @@ import logging
 import shutil
 import uuid
 from fastapi.encoders import jsonable_encoder
-from models.user import File
+from backend.models.file import File
 from fastapi import UploadFile, HTTPException
-from core.config import settings
+from backend.core.config import settings
 from pathlib import Path
+
 logger = logging.getLogger(__name__)
 supported_image_extensions = {
     ex for ex, f in Image.registered_extensions().items() if f in Image.OPEN}
@@ -28,7 +29,7 @@ def init_folders_structure():
 
 
 def save_file(upload_file: UploadFile, user_id: int, force_image=False) -> File:
-    if not upload_file.filename:
+    if not upload_file or not upload_file.filename:
         return
     originalFileName = upload_file.filename
     originalFilePath = Path(originalFileName)

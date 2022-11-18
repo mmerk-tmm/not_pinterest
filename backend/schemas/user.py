@@ -1,43 +1,46 @@
 from typing import List
-from pydantic import BaseModel
-from core.config import settings
-from schemas.file import File
-from helpers.forms import form_body
+from pydantic import BaseModel, HttpUrl
+from fastapi import Query
+from backend.core.config import settings, env_config
+from backend.schemas.file import File
+from backend.helpers.forms import form_body
 
 
-class UserAuth(BaseModel):
-    username: str
-    password: str
+class UserUsername(BaseModel):
+    username: str = Query(
+        default=None,
+        min_length=int(env_config.get('VITE_MIN_LOGIN_LENGTH')),
+        max_length=int(env_config.get('VITE_MAX_LOGIN_LENGTH'))
+    )
+
+
+class UserAuth(UserUsername):
+    password: str = Query(
+        default=None,
+        min_length=int(env_config.get('VITE_MIN_PASSWORD_LENGTH'))
+    )
 
 
 class UserBase(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
-
-
-class UserTypes(BaseModel):
-    is_superuser: bool = False
-
-
-class UserWithTypeRegister(UserBase, UserAuth, UserTypes):
-    ...
+    description: str | None = None
+    site: HttpUrl | None = None
 
 
 class UserRegister(UserBase, UserAuth):
     ...
 
 
-class UserModifiable(UserBase):
+class UserModifiable(UserUsername, UserBase):
     ...
 
 
 @form_body
-class UserModifiableForm(UserBase):
-    ...
+class UserModifiableForm(UserModifiable):
     remove_picture: bool = False
 
 
-class UserInfo(UserTypes, UserBase):
+class UserInfo(UserBase, UserUsername):
     id: int
-    username: str
     picture: str | None = None
