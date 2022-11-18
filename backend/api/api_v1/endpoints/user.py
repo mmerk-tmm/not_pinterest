@@ -18,6 +18,12 @@ def update_user_data(UserData: UserModifiableForm = Depends(UserModifiableForm),
                             detail="неправильное имя пользователя или пароль")
     db_image = save_file(upload_file=userPicture,
                          user_id=db_user.id, force_image=True)
+    if UserData.username:
+        db_user_username = user_cruds.get_user_by_username(
+            username=UserData.username)
+        if db_user_username and db_user_username.id != current_user_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="пользователь с таким юзернеймом уже существует")
     db_user_updated = user_cruds.update(
         user=db_user, new_user_data=UserData, userPic=db_image)
     user_data = db_user_updated.as_dict()
