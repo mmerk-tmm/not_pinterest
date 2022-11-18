@@ -5,64 +5,82 @@
             Отредактируйте основные личные сведения, чтобы улучшить рекомендации. Эта информация является
             конфиденциальной и не будет отображаться в вашем общедоступном профиле.
         </div>
-        <div class="formkit-outer" data-family="text" data-type="text">
+        <div class="formkit-outer personal-information" data-family="text" data-type="text">
             <div class="formkit-wrapper">
                 <label class="formkit-label">Пол</label>
                 <div class="select-gender">
                     <label class="item-wrapper" for="male">
                         <div class="item">
-                            <input class="M8E MIw e43 xpn ac9 BG7" id="male" name="gender" type="radio" value="male">
+                            <input class="M8E MIw e43 xpn ac9 BG7" id="male" name="gender" type="radio" value="male"
+                                v-model="otherGenderInputValue">
                         </div>
                         <div class="text">Мужской</div>
                     </label>
                     <label class="item-wrapper" for="female">
                         <div class="item">
-                            <input class="M8E MIw e43 xpn ac9 BG7" id="female" name="gender" type="radio"
-                                value="female">
+                            <input id="female" name="gender" type="radio" value="female"
+                                v-model="otherGenderInputValue">
                         </div>
                         <div class="text">Женский</div>
                     </label>
                     <label class="item-wrapper" for="unspecified">
                         <div class="item">
-                            <input class="M8E MIw e43 xpn ac9 BG7" id="unspecified" name="gender" type="radio"
-                                value="unspecified">
+                            <input ref="otherGender" id="unspecified" name="gender" type="radio" value="unspecified"
+                                v-model="otherGenderInputValue">
                         </div>
                         <div class="text">Другой</div>
                     </label>
-
                 </div>
             </div>
+            <FormField :border-radius="10" placeholder="Введите свой гендер"
+                v-if="otherGenderInputValue === 'unspecified'" off-margin />
         </div>
 
     </div>
 </template>
+<script>
+import FormField from './FormField.vue';
+
+export default {
+    data() {
+        return {
+            otherGenderInputValue: ''
+        }
+    },
+    components: { FormField }
+}
+</script>
 <style lang="scss">
 @use '@/assets/styles/helpers';
 
-.select-gender {
+.personal-information {
     display: flex;
+    flex-direction: column;
     gap: 10px;
 
-    .item-wrapper {
-        @include helpers.flex-center;
-        gap: 5px;
+    .select-gender {
+        display: flex;
+        gap: 10px;
 
-        .item {
-            border: 2px solid var(--color-gray-roboflow-400);
-            border-radius: 50%;
-            height: 24px;
-            width: 24px;
+        .item-wrapper {
+            @include helpers.flex-center;
+            gap: 5px;
 
-            input {
-                opacity: 0;
-            }
+            .item {
+                border: 2px solid var(--color-gray-roboflow-400);
+                border-radius: 50%;
+                height: 24px;
+                width: 24px;
 
-            &:has(input:checked) {
-                border: 8px solid black;
+                input {
+                    opacity: 0;
+                }
+
+                &:has(input:checked) {
+                    border: 8px solid black;
+                }
             }
         }
     }
-
-
 }
 </style>

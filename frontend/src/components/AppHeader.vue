@@ -29,7 +29,7 @@
             @mouseup="menuButtonPushed = false">
             <FontAwesomeIcon icon="chevron-down" />
         </div>
-        <div class="options" v-if="optionsOpen">
+        <div class="options" v-if="optionsOpen" v-on-click-outside="closeMenu">
             <div class="items">
                 <div class="item">Настройки</div>
                 <div class="item">Настройки</div>
@@ -63,13 +63,17 @@ export default {
             if (this.createToggle) {
                 this.createToggle = false;
             }
+        },
+        closeMenu() {
+            this.optionsOpen = false;
         }
     },
     watch: {
         searchFocused(value) {
             console.log(value)
             this.$emit('searchOpened', value)
-        }
+        },
+
     },
     directives: {
         OnClickOutside: vOnClickOutside,
