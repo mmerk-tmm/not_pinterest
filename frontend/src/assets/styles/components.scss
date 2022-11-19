@@ -1,0 +1,51 @@
+@use '@/assets/styles/helpers';
+
+@mixin button {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-background-mute-3);
+    padding: 10px;
+    gap: 5px;
+    border-radius: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--color-text);
+
+
+    .icon {
+        @include helpers.flex-center;
+
+        svg {
+            height: 25px;
+        }
+    }
+
+    .text {
+        text-align: center;
+    }
+}
+
+@mixin button-sizes {
+    width: 40px;
+    height: 40px;
+
+    svg {
+        height: 18px;
+        width: 18px;
+    }
+}
+
+@mixin button-colors {
+    &:not(:where(.active, .wrong)):hover {
+        // background-color: var(--color-background-mute-4);
+    }
+
+    &.active {
+        // background-color: var(--purple);
+    }
+
+    &.wrong {
+        // background-color: var(--red-0);
+    }
+
+}

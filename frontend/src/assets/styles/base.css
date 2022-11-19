@@ -23,7 +23,20 @@
   --color-background: var(--baby-powder);
   --shadow: rgb(0 0 0 / 10%) 0px 8px 8px -8px;
   --elevation-floating: 0 0 8px rgba(0, 0, 0, 0.1);
-  --fields-border-color: var(--color-gray-roboflow-500)
+  --fields-border-color: var(--color-gray-roboflow-500);
+  --g-colorRed0: #ff5247;
+  --g-colorRed100: #e60023;
+  --g-colorGray0Hovered: #f0f0f0;
+  --g-colorGray100Hovered: #e2e2e2;
+  --g-colorGray150Hovered: #d0d0d0;
+  --g-colorGray200Hovered: #878787;
+  --g-colorGray0: #fff;
+  --g-colorGray50: #fff;
+  --g-colorGray100: #efefef;
+  --g-colorGray150: #ddd;
+  --g-colorGray200: #767676;
+  --g-colorGray300: #111;
+  --g-colorGray400: #000;
 }
 
 
@@ -33,8 +46,8 @@
 *::after {
   box-sizing: border-box;
   margin: 0;
-  position: relative;
   font-weight: normal;
+  transition: color 0.2s, background-color 0.2s;
 }
 
 body {
@@ -42,7 +55,7 @@ body {
   padding: 0px;
   color: var(--color-text);
   background: var(--color-background);
-  transition: color 0.2s, background-color 0.2s;
+
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", メイリオ, Meiryo, "ＭＳ Ｐゴシック", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 

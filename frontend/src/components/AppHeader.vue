@@ -1,43 +1,53 @@
 <template>
     <header :class="{ onShadow: !searchFocused }">
-        <router-link class="link" to="/">Главная</router-link>
-        <div class="link dropdown" @click.self="createToggle = !createToggle" v-on-click-outside="closeDropdown">
-            Создать
-            <FontAwesomeIcon icon="chevron-down" />
-            <div :class="['list', { active: createToggle }]">
-                <router-link class="item" to="/new-idea">Создать идею</router-link>
-                <router-link class="item" to="/new-art">Создать арт</router-link>
+        <template v-if="logined">
+            <router-link class="link" to="/">Главная</router-link>
+            <div class="link dropdown" @click.self="createToggle = !createToggle" v-on-click-outside="closeDropdown">
+                Создать
+                <FontAwesomeIcon icon="chevron-down" />
+                <div :class="['list', { active: createToggle }]">
+                    <router-link class="item" to="/new-idea">Создать идею</router-link>
+                    <router-link class="item" to="/new-art">Создать арт</router-link>
+                </div>
             </div>
-        </div>
-        <div class="search">
-            <div class="icon" v-if="!searchFocused">
-                <FontAwesomeIcon icon="magnifying-glass" />
+            <div class="search">
+                <div class="icon" v-if="!searchFocused">
+                    <FontAwesomeIcon icon="magnifying-glass" />
+                </div>
+                <input placeholder="Поиск" type="text" @focus="searchFocused = true" @blur="searchFocused = false">
+                <div class="results-list" v-if="searchFocused">
+                    adsasdasd
+                </div>
             </div>
-            <input placeholder="Поиск" type="text" @focus="searchFocused = true" @blur="searchFocused = false">
-            <div class="results-list" v-if="searchFocused">
-                adsasdasd
+            <div class="button">
+                <FontAwesomeIcon icon="bell" />
             </div>
-        </div>
-        <div class="button">
-            <FontAwesomeIcon icon="bell" />
-        </div>
-        <router-link to="/settings" class="button">
-            <FontAwesomeIcon icon="user" />
-        </router-link>
-        <div :class="['button', 'menu', { mouseDown: menuButtonPushed }], { active: optionsOpen }"
-            @click="optionsOpen = !optionsOpen" @mousedown="menuButtonPushed = true"
-            @mouseup="menuButtonPushed = false">
-            <FontAwesomeIcon icon="chevron-down" />
-        </div>
-        <div class="options" v-if="optionsOpen" v-on-click-outside="closeMenu">
-            <div class="items">
-                <div class="item">Настройки</div>
-                <div class="item">Настройки</div>
-                <div class="item">Настройки</div>
-                <div class="item">Настройки</div>
-                <div class="item">Настройки</div>
-                <div class="item">Настройки</div>
+            <router-link to="/settings" class="button">
+                <FontAwesomeIcon icon="user" />
+            </router-link>
+            <div :class="['button', 'menu', { mouseDown: menuButtonPushed }], { active: optionsOpen }"
+                @click="optionsOpen = !optionsOpen" @mousedown="menuButtonPushed = true"
+                @mouseup="menuButtonPushed = false">
+                <FontAwesomeIcon icon="chevron-down" />
             </div>
+            <div class="options" v-if="optionsOpen" v-on-click-outside="closeMenu">
+                <div class="items">
+                    <div class="item">Настройки</div>
+                    <div class="item">Настройки</div>
+                    <div class="item">Настройки</div>
+                    <div class="item">Настройки</div>
+                    <div class="item">Настройки</div>
+                    <div class="item">Настройки</div>
+                </div>
+            </div>
+        </template>
+        <div class="not-logined" v-else>
+            <div class="link active red" @click="loginDialogActive = true">Войти</div>
+            <div class="link hovered">Регистрация</div>
+            <ModalDialog :active="loginDialogActive" headline="Войти в аккаунт" :buttonText="'Войти'" @close="loginDialogActive = false">
+                <FormField :border-radius="10" off-margin label="Логин" placeholder="Логин"/>
+                <FormField :border-radius="10" off-margin label="Пароль" placeholder="Пароль"/>
+            </ModalDialog>
         </div>
     </header>
 </template>
@@ -47,15 +57,29 @@ import { faChevronDown, faMagnifyingGlass, faBell, faUser } from '@fortawesome/f
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 library.add(faChevronDown, faMagnifyingGlass, faBell, faUser);
 import { vOnClickOutside } from "@vueuse/components";
-
+import { useAuthStore } from '../stores/auth';
+import handleError from '../composables/errors';
+import { useToast } from "vue-toastification";
+import { storeToRefs } from 'pinia';
+import ModalDialog from '../components/ModalDialog.vue';
+import FormField from './FormField.vue';
 export default {
-    components: { FontAwesomeIcon },
+    components: { FontAwesomeIcon, ModalDialog, FormField },
+    setup() {
+        const { logined } = storeToRefs(useAuthStore());
+        const toast = useToast();
+        return {
+            logined,
+            toast,
+        }
+    },
     data() {
         return {
             createToggle: false,
             searchFocused: false,
             menuButtonPushed: false,
             optionsOpen: false,
+            loginDialogActive: false,
         }
     },
     methods: {
@@ -94,6 +118,19 @@ header {
     // &.onShadow {
     //     box-shadow: var(--shadow);
     // }
+    .not-logined {
+        display: flex;
+        gap: 5px;
+        margin-left: auto;
+
+        .hovered {
+            background-color: var(--g-colorGray100);
+
+            &:hover {
+                background-color: var(--g-colorGray100Hovered);
+            }
+        }
+    }
 
     .link {
         height: 48px;
@@ -105,6 +142,7 @@ header {
         text-decoration: none;
         font-weight: 600;
         gap: 5px;
+        cursor: pointer;
 
         svg {
             width: 15px;
@@ -147,9 +185,14 @@ header {
         }
 
         &.router-link-active,
-        &:has(.router-link-active) {
+        &:has(.router-link-active),
+        &.active {
             color: var(--color-text-rev);
             background-color: var(--color-black-cosmicore-900);
+
+            &.red {
+                background-color: var(--g-colorRed100);
+            }
         }
     }
 
@@ -198,6 +241,7 @@ header {
         background-color: transparent;
         transition: background-color .2s;
         color: var(--color-gray-roboflow-500);
+        cursor: pointer;
 
         svg {
             height: 24px;
@@ -217,7 +261,6 @@ header {
             height: 24px;
             width: 24px;
 
-            cursor: pointer;
 
             svg {
                 height: 14px;
