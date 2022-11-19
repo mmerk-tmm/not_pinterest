@@ -11,8 +11,7 @@
             </div>
         </div>
         <FormTextArea class="description" name="description" label="Описание" placeholder="Расскажите свою историю"
-            v-model="description" :rows="5" offMargin :paddingRight="35"
-            :maxLength="VITE_MAX_PUBLIC_PROFILE_DESCRIPTION_LENGTH">
+            v-model="description" :rows="5" offMargin :paddingRight="35" :maxLength="VITE_MAX_DESCRIPTION_LENGTH">
             <span :class="['count', { wrong: descriptionLenghtLimit < 0 }]" v-if="descriptionLenghtLimit">
                 {{ descriptionLenghtLimit }}
             </span>
@@ -79,7 +78,9 @@ export default {
         this.getMe();
     },
     watch: {
-        userData({ first_name, last_name, username, site, picture, description }) {
+        userData(data) {
+            if (!data) return
+            const { first_name, last_name, username, site, picture, description } = data;
             this.firstName = first_name;
             this.lastName = last_name;
             this.original_image = picture;

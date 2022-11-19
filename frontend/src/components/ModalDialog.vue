@@ -3,6 +3,11 @@
         <Transition name="modal">
             <div class="modal-bg" v-if="active" @click.self="closeModal">
                 <div class="modal">
+                    <div class="messages">
+                        <div :class="['message', { error: message.error }]" v-for="message in messages">
+                            {{ message.text }}
+                        </div>
+                    </div>
                     <div class="headline">
                         <div class="text">{{ headline }}</div>
                         <div class="close-button" @click="closeModal">
@@ -19,7 +24,8 @@
                             <FontAwesomeIcon icon="fa-spinner" v-else />
                         </div>
                         <div class="button" v-if="noButton" @click="$emit('no')">Нет</div>
-                        <div class="button custom" v-if="buttonText" @click="$emit('buttonClick')">{{ buttonText }}</div>
+                        <div :class="['button', 'custom', { active: buttonActive }]" v-if="buttonText"
+                            @[buttonActive&&`click`]="$emit('buttonClick')">{{ buttonText }}</div>
                     </div>
                 </div>
             </div>
@@ -41,8 +47,10 @@ export default {
         yesLoading: Boolean,
         noButton: Boolean,
         buttonText: String,
+        buttonActive: Boolean,
+        messages: Array,
     },
-    emits: ['close'],
+    emits: ['close', 'yes', 'no', 'buttonClick'],
     methods: {
         closeModal() {
             this.$emit('close');
@@ -81,6 +89,37 @@ export default {
         display: flex;
         flex-direction: column;
         gap: 10px;
+        position: relative;
+
+        .messages {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            width: 100%;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+
+            .message {
+                border-radius: 10px;
+                background-color: var(--baby-powder);
+                padding: 10px;
+                position: relative;
+                isolation: isolate;
+                overflow: hidden;
+                text-align: center;
+
+                &.error {
+                    &::after {
+                        content: '';
+                        background-color: rgba($color: red, $alpha: 0.2);
+                        position: absolute;
+                        inset: 0;
+                        z-index: -1;
+                    }
+                }
+            }
+        }
 
         .headline {
             display: flex;
@@ -99,6 +138,7 @@ export default {
                 border-radius: 15px;
                 padding: 8px;
                 background-color: var(--color-gray-roboflow-300);
+
                 &:hover {
                     background-color: var(--color-gray-roboflow-400);
                 }
@@ -126,8 +166,16 @@ export default {
                 text-align: center;
                 padding: 5px;
                 border-radius: 10px;
+
                 &.custom {
                     padding: 10px;
+                    color: var(--color-text);
+                    background-color: var(--g-colorGray150);
+
+                    &.active {
+                        color: var(--color-text-rev);
+                        background-color: var(--color-text);
+                    }
                 }
             }
         }

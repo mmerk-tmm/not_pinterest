@@ -1,6 +1,7 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
+import { computed } from 'vue';
 </script>
 
 <template>
@@ -14,16 +15,31 @@ export default {
   data() {
     return {
       isSearchOpended: false,
+      scrollY: window.scrollY,
     }
   },
   methods: {
     onSearchOpended(value) {
       this.isSearchOpended = value;
-    }
+    },
+    onScroll() {
+      this.scrollY = window.scrollY
+    },
   },
-  provide: {
-    runValidation(){
-      return false
+  mounted() {
+    this.$nextTick(() => {
+      window.addEventListener('scroll', this.onScroll);
+    });
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.onScroll);
+  },
+  provide() {
+    return {
+      runValidation() {
+        return false
+      },
+      scrollY: computed(() => this.scrollY),
     }
   }
 }
@@ -33,6 +49,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
+  padding-top: 80px;
 
   &.search-opened {
     position: relative;

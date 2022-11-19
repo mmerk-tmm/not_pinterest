@@ -1,5 +1,5 @@
 <template>
-    <header :class="{ onShadow: !searchFocused }">
+    <header :class="{ onShadow: enableShahow }">
         <template v-if="logined">
             <router-link class="link" to="/">Главная</router-link>
             <div class="link dropdown" @click.self="createToggle = !createToggle" v-on-click-outside="closeDropdown">
@@ -32,21 +32,27 @@
             </div>
             <div class="options" v-if="optionsOpen" v-on-click-outside="closeMenu">
                 <div class="items">
-                    <div class="item">Настройки</div>
-                    <div class="item">Настройки</div>
-                    <div class="item">Настройки</div>
-                    <div class="item">Настройки</div>
-                    <div class="item">Настройки</div>
-                    <div class="item">Настройки</div>
+                    <div class="item" @click="logout">Выйти</div>
                 </div>
             </div>
         </template>
         <div class="not-logined" v-else>
-            <div class="link active red" @click="loginDialogActive = true">Войти</div>
-            <div class="link hovered">Регистрация</div>
-            <ModalDialog :active="loginDialogActive" headline="Войти в аккаунт" :buttonText="'Войти'" @close="loginDialogActive = false">
-                <FormField :border-radius="10" off-margin label="Логин" placeholder="Логин"/>
-                <FormField :border-radius="10" off-margin label="Пароль" placeholder="Пароль"/>
+            <div class="link active red" @click="openLoginDialog">Войти</div>
+            <div class="link hovered" @click="openRegisterDialog">Регистрация</div>
+            <ModalDialog :active="dialogActive"
+                :headline="this.loginDialogActive ? 'Войти в аккаунт' : 'Зарегистрировать аккаунт'"
+                :buttonText="this.loginDialogActive ? 'Войти' : 'Зарегистрироваться'" @close="closeDialog"
+                :buttonActive="!fieldsWrong" :messages="dialogMessages" @buttonClick="buttonHandler">
+                <template v-if="registerDialogActive">
+                    <FormField :border-radius="borderRadius" off-margin v-model="firstName" label="Имя"
+                        placeholder="Имя" />
+                    <FormField :border-radius="borderRadius" off-margin v-model="lastName" label="Фамилия"
+                        placeholder="Фамилия" />
+                </template>
+                <FormField :border-radius="borderRadius" off-margin v-model="login" label="Логин" placeholder="Логин"
+                    not-empty />
+                <FormField :border-radius="borderRadius" off-margin v-model="password" label="Пароль"
+                    placeholder="Пароль" not-empty is-password />
             </ModalDialog>
         </div>
     </header>
@@ -66,11 +72,23 @@ import FormField from './FormField.vue';
 export default {
     components: { FontAwesomeIcon, ModalDialog, FormField },
     setup() {
-        const { logined } = storeToRefs(useAuthStore());
+        const { VITE_MIN_PASSWORD_LENGTH, VITE_MAX_LOGIN_LENGTH, VITE_MIN_LOGIN_LENGTH, VITE_MAX_FIRSTNAME_LENGTH, VITE_MAX_LASTNAME_LENGTH } = import.meta.env;
+        const { logined, message } = storeToRefs(useAuthStore());
+        const { loginRequest, registerRequest, clearMessage, logoutRequest } = useAuthStore();
         const toast = useToast();
         return {
             logined,
             toast,
+            VITE_MIN_PASSWORD_LENGTH,
+            VITE_MAX_LOGIN_LENGTH,
+            VITE_MIN_LOGIN_LENGTH,
+            VITE_MAX_FIRSTNAME_LENGTH,
+            VITE_MAX_LASTNAME_LENGTH,
+            loginRequest,
+            registerRequest,
+            clearMessage,
+            message,
+            logoutRequest
         }
     },
     data() {
@@ -80,24 +98,115 @@ export default {
             menuButtonPushed: false,
             optionsOpen: false,
             loginDialogActive: false,
+            registerDialogActive: false,
+            login: '',
+            password: '',
+            firstName: '',
+            lastName: '',
+            borderRadius: 10,
         }
     },
+    watch: {
+        logined() {
+            this.closeDialog();
+        },
+        searchFocused(value) {
+            this.$emit('searchOpened', value)
+        },
+    },
+    inject: ['scrollY'],
     methods: {
         closeDropdown() {
             if (this.createToggle) {
                 this.createToggle = false;
             }
         },
+        logout() {
+            this.logoutRequest();
+            this.closeMenu();
+        },
         closeMenu() {
             this.optionsOpen = false;
+        },
+        closeDialog() {
+            this.loginDialogActive = false;
+            this.registerDialogActive = false;
+            this.login = '';
+            this.password = '';
+            this.firstName = '';
+            this.lastName = '';
+            this.clearMessage();
+        },
+        openLoginDialog() {
+            this.loginDialogActive = true;
+            this.registerDialogActive = false;
+        },
+        openRegisterDialog() {
+            this.loginDialogActive = false;
+            this.registerDialogActive = true;
+        },
+        buttonHandler() {
+            if (this.fieldsWrong) return;
+            if (this.loginDialogActive) {
+                this.loginRequest(this.login, this.password)
+            } else {
+                this.registerRequest(this.login, this.password, this.firstName, this.lastName)
+            }
         }
     },
-    watch: {
-        searchFocused(value) {
-            console.log(value)
-            this.$emit('searchOpened', value)
+    computed: {
+        fieldsWrong() {
+            var isWrong = this.loginWrong || this.passwordWrong;
+            if (this.registerDialogActive) {
+                isWrong = isWrong || this.firstNameWrong || this.lastNameWrong
+            }
+            return isWrong;
         },
+        dialogActive() {
+            return this.loginDialogActive || this.registerDialogActive
+        },
+        enableShahow() {
+            return this.scrollY.value > 20
+        },
+        loginWrong() {
+            return this.login.length < this.VITE_MIN_LOGIN_LENGTH || this.login.length > this.VITE_MAX_LOGIN_LENGTH
+        },
+        passwordWrong() {
+            return this.password.length < this.VITE_MIN_PASSWORD_LENGTH;
+        },
+        firstNameWrong() {
+            return this.firstName.length > this.VITE_MAX_FIRSTNAME_LENGTH
+        },
+        lastNameWrong() {
+            return this.lastName.length > this.VITE_MAX_LASTNAME_LENGTH
+        },
+        dialogMessages() {
+            if (this.message.length !== 0) {
+                return [{ error: true, text: this.message }]
+            }
+            var messages = [];
+            if (this.login) {
+                if (this.login.length < this.VITE_MIN_LOGIN_LENGTH) {
+                    messages.push({ error: true, text: `Минимальная длина логина ${this.VITE_MIN_LOGIN_LENGTH} символов` })
+                }
+                if (this.login.length > this.VITE_MAX_LOGIN_LENGTH) {
+                    messages.push({ error: true, text: `Максимальная длина логина ${this.VITE_MAX_LOGIN_LENGTH} символов` })
+                }
+            }
+            if (this.password && this.passwordWrong) {
+                messages.push({ error: true, text: `Минимальная длина пароля ${this.VITE_MIN_PASSWORD_LENGTH} символов` });
+            }
+            if (this.registerDialogActive) {
 
+                if (this.firstNameWrong) {
+                    messages.push({ error: true, text: `Максимальная длина имени ${this.VITE_MAX_FIRSTNAME_LENGTH} символов` })
+                }
+                if (this.lastNameWrong) {
+                    messages.push({ error: true, text: `Максимальная длина фамилии ${this.VITE_MAX_LASTNAME_LENGTH} символов` });
+                }
+            }
+            return messages
+        }
     },
     directives: {
         OnClickOutside: vOnClickOutside,
@@ -113,11 +222,16 @@ header {
     align-items: center;
     padding: 4px 16px;
     z-index: 99;
-    position: relative;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: var(--color-background);
+    transition: box-shadow .2s;
 
-    // &.onShadow {
-    //     box-shadow: var(--shadow);
-    // }
+    &.onShadow {
+        box-shadow: var(--shadow);
+    }
+
     .not-logined {
         display: flex;
         gap: 5px;
@@ -294,6 +408,7 @@ header {
                 padding: 8px;
                 font-family: var(--font-family-default-latin);
                 font-weight: 600;
+                cursor: pointer;
 
                 &:hover {
                     background-color: var(--color-gray-roboflow-200);
