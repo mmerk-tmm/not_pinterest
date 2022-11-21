@@ -1,7 +1,7 @@
 <template>
     <div class="new-idea-wrapper">
         <div class="new-idea-container">
-            <h1>Черновики пинов-идей</h1>
+            <h1></h1>
         </div>
     </div>
 </template>

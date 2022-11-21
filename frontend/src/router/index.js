@@ -15,6 +15,11 @@ const router = createRouter({
       component: () => import('../views/NewIdeaView.vue'),
     },
     {
+      path: '/new-art',
+      name: 'Новый арт',
+      component: () => import('../views/NewArtView.vue'),
+    },
+    {
       path: '/settings',
       name: 'Настройки',
       component: () => import('../views/SettingsView.vue'),
@@ -39,5 +44,33 @@ const router = createRouter({
     },
   ]
 })
+router.beforeEach((to, from, next) => {
+  document.title = to.name;
+
+  let flag = sessionStorage.getItem('logined');
+  let role = sessionStorage.getItem('user-role');
+  if (to.meta.requireAuth == true) {
+    if (!flag || flag === 'false') {
+      next({
+        path: '/login'
+      })
+    } else {
+      let roles = to.meta.roles;
+      if (roles) {
+        if (!role || roles.indexOf(role) < 0) {
+          next({
+            path: '/login'
+          })
+        } else {
+          return next();
+        }
+      } else {
+        return next();
+      }
+    }
+  } else {
+    return next();
+  }
+});
 
 export default router
