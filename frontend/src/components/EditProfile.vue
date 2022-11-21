@@ -7,11 +7,14 @@
                 <FormField :borderRadius="10" name="first_name" placeholder="Имя" v-model="firstName" offMargin>
                     <span :class="['count', { wrong: firstNameLenght < 0 }]">{{ firstNameLenght }}</span>
                 </FormField>
-                <FormField :borderRadius="10" name="last_name" placeholder="Фамилия" v-model="lastName" offMargin />
+                <FormField :borderRadius="10" name="last_name" placeholder="Фамилия" v-model="lastName" offMargin>
+                    <span :class="['count', { wrong: lastNameLenght < 0 }]">{{ lastNameLenght }}</span>
+                </FormField>
             </div>
         </div>
         <FormTextArea class="description" name="description" label="Описание" placeholder="Расскажите свою историю"
-            v-model="description" :rows="5" offMargin :paddingRight="35" :maxLength="Number(VITE_MAX_DESCRIPTION_LENGTH)">
+            v-model="description" :rows="5" offMargin :paddingRight="35"
+            :maxLength="Number(VITE_MAX_DESCRIPTION_LENGTH)">
             <span :class="['count', { wrong: descriptionLenghtLimit < 0 }]" v-if="descriptionLenghtLimit">
                 {{ descriptionLenghtLimit }}
             </span>

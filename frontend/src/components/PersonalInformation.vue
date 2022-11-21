@@ -29,14 +29,10 @@
                     </label>
                 </div>
             </div>
-            <template v-if="gender === 'unspecified'">
-                <FormField :border-radius="10" placeholder="Введите свой гендер" off-margin
-                    v-model="unspecifiedGender" />
-                <div :class="['send-unspecified-gender', { active: unspecifiedButtonActive }]" @click="">dadas</div>
-            </template>
-
+            <FormField :border-radius="10" placeholder="Введите свой гендер" off-margin v-model="unspecifiedGender"
+                v-if="gender === 'unspecified'" />
+            <div :class="['send-unspecified-gender', { active: ButtonActive }]" @click="send">Отправить</div>
         </div>
-
     </div>
 </template>
 <script>
@@ -51,38 +47,35 @@ export default {
     },
     data() {
         return {
-            gender: '',
+            gender: null,
             unspecifiedGender: '',
-            gettedGender: false,
+            watchChange: false,
+            originalGender: null,
         }
     },
     mounted() {
         this.getGender();
     },
     computed: {
-        unspecifiedButtonActive() {
-            return this.unspecifiedGender.length > 0
+        ButtonActive() {
+            return this.gender !== 'unspecified' ? this.originalGender !== this.gender : this.unspecifiedGender.length > 0 && this.originalGender !== this.unspecifiedGender
         }
     },
     components: { FormField },
     watch: {
-        gender(value) {
-            console.log(this.gettedGender)
-            if (!this.gettedGender) return
-            if (value !== 'unspecified') {
-                this.send();
-            }
-        },
         handleUnspecifiedButton() {
             if (!this.unspecifiedButtonActive) return
             this.send();
+        },
+        gender(value) {
+            this.unspecifiedGender = this.originalGender;
         }
     },
     methods: {
         send() {
             HTTP.put('personal-information', { gender: this.gender === 'unspecified' ? this.unspecifiedGender : this.gender })
                 .then(response => {
-
+                    this.originalGender = response.data.gender;
                 })
                 .catch((error) => {
                     this.toast.error(handleError(error, 'При персональных данных произошла ошибка').message)
@@ -91,8 +84,14 @@ export default {
         getGender() {
             HTTP.get('personal-information', { validateStatus: false })
                 .then(response => {
-                    this.gender = response?.data?.gender;
-                    this.gettedGender = true;
+                    const gender = response?.data?.gender;
+                    this.originalGender = gender;
+                    if (['male', 'female'].includes(gender)) {
+                        this.gender = gender;
+                    } else {
+                        this.gender = 'unspecified';
+                        this.unspecifiedGender = gender;
+                    }
                 })
                 .catch((error) => {
                     this.toast.error(handleError(error, 'При персональных данных произошла ошибка').message)
@@ -109,6 +108,7 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-bottom: 0px;
 
     .send-unspecified-gender {
         @include components.button;

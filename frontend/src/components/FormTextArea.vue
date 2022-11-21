@@ -47,7 +47,7 @@ export default {
     }
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .formkit-inner {
 
     &.focused {
@@ -59,7 +59,7 @@ export default {
         width: 100%;
         resize: none;
         border: none;
-        box-shadow: 0 0 0 1px var(--fields-border-color);
+        // box-shadow: 0 0 0 1px var(--fields-border-color);    
         outline: none;
         background-color: transparent;
         border-radius: var(--radius);
