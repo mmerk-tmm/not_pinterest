@@ -28,6 +28,7 @@ export default {
     props: {
         pictureUrl: String,
         name: String,
+        blockColor: String,
     },
     emits: ['changed'],
     components: { FontAwesomeIcon },
@@ -36,11 +37,17 @@ export default {
             picture: this.pictureUrl,
             acceptedFormats: '.jpg, .jpeg, .png',
             target: null,
+            defaultColor: 'var(--color-text)',
         }
     },
     watch: {
         pictureUrl(value) {
             this.picture = value;
+        }
+    },
+    computed: {
+        color() {
+            return this.blockColor || this.defaultColor
         }
     },
     methods: {
@@ -98,12 +105,13 @@ export default {
         overflow: hidden;
         border: 2px dashed transparent;
 
-        border-color: var(--color-text);
+        border-color: v-bind(color);
 
         svg {
             width: 40%;
             height: 40%;
             transition: .2s opacity;
+            color:  v-bind(color);
         }
     }
 
@@ -114,7 +122,7 @@ export default {
 
         &.empty {
             svg {
-                opacity: 0.2;
+                opacity: 0.5;
             }
         }
 
@@ -138,7 +146,7 @@ export default {
             inset: 0;
             @include helpers.flex-center;
             flex-direction: column;
-            background-color: rgba($color: #000000, $alpha: 0.2);
+            background-color: rgba($color: #000000, $alpha: 0.3);
             padding: 5px;
             aspect-ratio: 1;
 
