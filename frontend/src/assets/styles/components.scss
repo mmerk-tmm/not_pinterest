@@ -3,10 +3,22 @@
 @mixin button {
     display: flex;
     flex-direction: column;
-    background-color: var(--color-background-mute-3);
     padding: 10px;
+    border-radius: 10px;
+    background-color: var(--color-gray-roboflow-300);
+    text-align: center;
+
+    &.wrong {
+        background-color: var(--rose-madder);
+    }
+
+    &.active {
+        background: black;
+        color: white;
+        cursor: pointer;
+    }
+
     gap: 5px;
-    border-radius: 15px;
     cursor: pointer;
     text-decoration: none;
     color: var(--color-text);

@@ -32,3 +32,14 @@ class User(Base):
     is_superuser = Column(Boolean, default=False)
     picture_id = Column(Integer, ForeignKey("files.id", ondelete='SET NULL'))
     picture = relationship("File", foreign_keys=[picture_id])
+
+
+class PersonalInformation(Base):
+    __tablename__ = 'personal_information'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    gender = Column(
+        String(
+            int(env_config.get('VITE_MAX_GENDER_LENGTH'))
+        ), nullable=False)

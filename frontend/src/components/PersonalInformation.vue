@@ -29,31 +29,90 @@
                     </label>
                 </div>
             </div>
-            <FormField :border-radius="10" placeholder="Введите свой гендер" v-if="gender === 'unspecified'"
-                off-margin />
+            <template v-if="gender === 'unspecified'">
+                <FormField :border-radius="10" placeholder="Введите свой гендер" off-margin
+                    v-model="unspecifiedGender" />
+                <div :class="['send-unspecified-gender', { active: unspecifiedButtonActive }]" @click="">dadas</div>
+            </template>
+
         </div>
 
     </div>
 </template>
 <script>
+import { HTTP } from '../http-common.vue';
 import FormField from './FormField.vue';
-
+import { useToast } from "vue-toastification";
+import handleError from '../composables/errors';
 export default {
+    setup() {
+        const toast = useToast();
+        return { toast }
+    },
     data() {
         return {
             gender: '',
+            unspecifiedGender: '',
+            gettedGender: false,
         }
     },
-    components: { FormField }
+    mounted() {
+        this.getGender();
+    },
+    computed: {
+        unspecifiedButtonActive() {
+            return this.unspecifiedGender.length > 0
+        }
+    },
+    components: { FormField },
+    watch: {
+        gender(value) {
+            console.log(this.gettedGender)
+            if (!this.gettedGender) return
+            if (value !== 'unspecified') {
+                this.send();
+            }
+        },
+        handleUnspecifiedButton() {
+            if (!this.unspecifiedButtonActive) return
+            this.send();
+        }
+    },
+    methods: {
+        send() {
+            HTTP.put('personal-information', { gender: this.gender === 'unspecified' ? this.unspecifiedGender : this.gender })
+                .then(response => {
+
+                })
+                .catch((error) => {
+                    this.toast.error(handleError(error, 'При персональных данных произошла ошибка').message)
+                });
+        },
+        getGender() {
+            HTTP.get('personal-information', { validateStatus: false })
+                .then(response => {
+                    this.gender = response?.data?.gender;
+                    this.gettedGender = true;
+                })
+                .catch((error) => {
+                    this.toast.error(handleError(error, 'При персональных данных произошла ошибка').message)
+                });
+        }
+    }
 }
 </script>
 <style lang="scss">
 @use '@/assets/styles/helpers';
+@use '@/assets/styles/components';
 
 .personal-information {
     display: flex;
     flex-direction: column;
     gap: 10px;
+
+    .send-unspecified-gender {
+        @include components.button;
+    }
 
     .select-gender {
         display: flex;

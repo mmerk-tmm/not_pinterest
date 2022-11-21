@@ -28,6 +28,15 @@ class UserBase(BaseModel):
     site: HttpUrl | None = None
 
 
+class PersonalInformationBase(BaseModel):
+    gender: str
+
+
+class PersonalInformation(PersonalInformationBase):
+    id: int
+    user_id: int
+
+
 class UserRegister(UserBase, UserAuth):
     ...
 

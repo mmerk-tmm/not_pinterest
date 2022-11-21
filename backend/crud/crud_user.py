@@ -2,7 +2,7 @@ from backend.crud.crud_file import file_cruds
 from backend.db.session import session
 from backend.models.file import File
 from backend.schemas.user import UserAuth, UserModifiable, UserRegister
-from backend.models.user import User
+from backend.models.user import PersonalInformation, User
 from passlib.context import CryptContext
 from fastapi.encoders import jsonable_encoder
 
@@ -41,6 +41,16 @@ class UserCruds:
         if not self.pwd_context.verify(user.password, db_user.hashed_password):
             return None
         return db_user
+
+    def get_personal_information(self, user_id: int):
+        return self.db.query(PersonalInformation).filter(PersonalInformation.user_id == user_id).first()
+
+    def update_personal_information(self, user_id: int, gender: str):
+        personal_information = self.get_personal_information(user_id)
+        if not personal_information:
+            return self.create(PersonalInformation(user_id=user_id, gender=gender))
+        personal_information.gender = gender
+        return self.create(personal_information)
 
     def update(self, user: User, new_user_data: UserModifiable, userPic: File) -> User:
         if user is None:

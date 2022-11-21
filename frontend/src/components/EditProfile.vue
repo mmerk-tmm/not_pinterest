@@ -11,7 +11,7 @@
             </div>
         </div>
         <FormTextArea class="description" name="description" label="Описание" placeholder="Расскажите свою историю"
-            v-model="description" :rows="5" offMargin :paddingRight="35" :maxLength="VITE_MAX_DESCRIPTION_LENGTH">
+            v-model="description" :rows="5" offMargin :paddingRight="35" :maxLength="Number(VITE_MAX_DESCRIPTION_LENGTH)">
             <span :class="['count', { wrong: descriptionLenghtLimit < 0 }]" v-if="descriptionLenghtLimit">
                 {{ descriptionLenghtLimit }}
             </span>
@@ -152,6 +152,8 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@use '@/assets/styles/components';
+
 .settings-selection {
     .picture-editor {
         margin-top: 10px;
@@ -177,20 +179,7 @@ export default {
     }
 
     .button {
-        padding: 10px;
-        border-radius: 10px;
-        background-color: var(--color-gray-roboflow-300);
-        text-align: center;
-
-        &.wrong {
-            background-color: var(--rose-madder);
-        }
-
-        &.active {
-            background: black;
-            color: white;
-            cursor: pointer;
-        }
+        @include components.button;
     }
 }
 </style>
