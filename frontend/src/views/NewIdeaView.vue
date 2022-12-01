@@ -22,6 +22,9 @@ import { HTTP } from '../http-common.vue';
 import { computed } from '@vue/reactivity';
 import { useToast } from 'vue-toastification';
 import { handleAxiosError } from '../composables/errors';
+import { useRouter } from 'vue-router'
+
+const router = useRouter();
 const toast = useToast();
 const { VITE_MAX_IDEA_NAME_LENGTH, VITE_MAX_IDEA_DESCRIPTION_LENGTH } = import.meta.env;
 
@@ -46,10 +49,12 @@ const sendIdea = async () => {
     if (!buttonActive.value) return
     try {
         const { data } = await HTTP.post('ideas', { name: name.value, description: description.value });
-        toast('Идея создана')
+        router.push({ path: '/ideas' })
     } catch (error) {
         if (error?.response?.status === 400) {
             toast.error(handleAxiosError(error).message);
+        } else {
+            throw error;
         }
     }
 

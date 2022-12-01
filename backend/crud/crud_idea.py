@@ -1,6 +1,6 @@
 from typing import List
 from backend.db.base import CRUDBase
-from backend.models.idea import Idea, IdeaLike
+from backend.models.idea import Idea, IdeaLike, Topic
 from sqlalchemy import func
 
 
@@ -18,22 +18,24 @@ class IdeaCruds(CRUDBase):
         end = page * page_size
         return self.db.query(Idea).order_by(Idea.id.desc()).slice(end-page_size, end).all()
 
-    def get_idea_like_by_id(self, user_id: int, idea_id: int):
+    def get_idea_like_by_user_id(self, user_id: int, idea_id: int):
         return self.db.query(IdeaLike).filter(
             IdeaLike.idea_id == idea_id and IdeaLike.user_id == user_id).first()
 
     def count_idea_likes(self, idea_id: int):
-        return self.db.query(IdeaLike).filter(
-            IdeaLike.idea_id == idea_id).count()
+        return self.db.query(IdeaLike).filter(IdeaLike.idea_id == idea_id).count()
 
     def toggle_like_idea(self, user_id: int, idea_id: int) -> bool:
-        liked = self.get_idea_like_by_id(user_id=user_id, idea_id=idea_id)
+        liked = self.get_idea_like_by_user_id(user_id=user_id, idea_id=idea_id)
         if liked:
             self.delete(model=liked)
             return False
         else:
             self.create(model=IdeaLike(idea_id=idea_id, user_id=user_id))
             return True
+
+    def search_topic(self, name: str):
+        return self.db.query(Topic).filter(Topic.name.like("%{}%".format(name))).limit(100).all()
 
 
 idea_cruds = IdeaCruds()

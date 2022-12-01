@@ -39,7 +39,7 @@
 import { HTTP } from '../../http-common.vue';
 import FormField from '../FormField.vue';
 import { useToast } from "vue-toastification";
-import handleError from '../../composables/errors';
+import { handleAxiosError } from '../../composables/errors';
 export default {
     setup() {
         const toast = useToast();
@@ -78,7 +78,7 @@ export default {
                     this.originalGender = response.data.gender;
                 })
                 .catch((error) => {
-                    this.toast.error(handleError(error, 'При персональных данных произошла ошибка').message)
+                    this.toast.error(handleAxiosError(error, 'При персональных данных произошла ошибка').message)
                 });
         },
         getGender() {

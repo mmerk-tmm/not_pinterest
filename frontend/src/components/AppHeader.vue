@@ -10,6 +10,7 @@
                     <router-link class="item" to="/new-art">Создать арт</router-link>
                 </div>
             </div>
+            <router-link class="link" to="/ideas">Идеи</router-link>
             <div class="search">
                 <div class="icon" v-if="!searchFocused">
                     <FontAwesomeIcon icon="magnifying-glass" />

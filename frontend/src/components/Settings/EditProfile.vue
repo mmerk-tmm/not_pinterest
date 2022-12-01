@@ -32,7 +32,7 @@ import SelectImage from '../SelectImage.vue';
 import FormField from '../FormField.vue';
 import FormTextArea from '../FormTextArea.vue';
 import { useAuthStore } from '../../stores/auth';
-import handleError from '../../composables/errors';
+import { handleAxiosError } from '../../composables/errors';
 import { useToast } from "vue-toastification";
 import { storeToRefs } from 'pinia';
 import { Role } from '../../helpers/roles.js';
@@ -146,7 +146,7 @@ export default {
                         this.setUserData(response.data);
                     })
                     .catch((error) => {
-                        this.toast.error(handleError(error, 'При обновлении профиля произошла ошибка').message)
+                        this.toast.error(handleAxiosError(error, 'При обновлении профиля произошла ошибка').message)
                     });
             }
         }

@@ -22,6 +22,7 @@
             </div>
             <FormTextArea placeholder="Добавьте описание арта"
                 label="Когда люди нажимают на изображение они видят 50 первых символов" />
+            <TopicSelector />
             <div class="buttons">
                 <div class="save-button">
                     Сохранить
@@ -89,7 +90,7 @@
 
                         .info-button {
                             @include components.button;
-                           
+
                         }
                     }
                 }
@@ -102,7 +103,8 @@
 import SelectImage from '../components/SelectImage.vue';
 import FormField from '../components/FormField.vue';
 import FormTextArea from '../components/FormTextArea.vue';
+import TopicSelector from '../components/topicSelector.vue';
 export default {
-    components: { SelectImage, FormField, FormTextArea }
+    components: { SelectImage, FormField, FormTextArea, TopicSelector }
 }
 </script>
