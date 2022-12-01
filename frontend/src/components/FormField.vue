@@ -1,13 +1,14 @@
 <template>
-    <div :class="['formkit-outer', { 'off-margin': offMargin }]">
+    <div :class="['formkit-outer', { 'off-margin': offMargin }]" :style="{ '--border-color': borderColor }"
+        data-family="text" data-type="text">
         <div class="formkit-wrapper">
             <label class="formkit-label" :for="id" v-if="label">{{ label }}</label>
             <div class="formkit-inner-container">
-                <div :class="['formkit-inner', { error: notValid }, { setColor: !offChangeColor }]"
+                <div :class="['formkit-inner', { error: forceWrong || notValid }, { setColor: !offChangeColor }, formkitInnerClass]"
                     :style="{ '--inner-radius': borderRadius + 'px' }">
                     <slot name="right"></slot>
-                    <input v-on="inputEvents || {}" :placeholder="placeholder" class="formkit-input"
-                        :type="isPassword ? 'password' : 'text'" :name="name" :id="id" v-model="modelValue">
+                    <input v-on="inputEvents || {}" :placeholder="placeholder" class="formkit-input" type="text"
+                        :name="name" :id="id" v-model="modelValue">
                     <slot></slot>
                 </div>
                 <slot name="side"></slot>
@@ -26,10 +27,6 @@
     .formkit-wrapper {
         flex-grow: 1;
         max-width: none;
-
-        .formkit-label {
-            font-weight: normal;
-        }
 
         .formkit-inner-container {
             display: flex;
@@ -98,7 +95,9 @@ export default {
         offChangeColor: Boolean,
         value: String,
         inputEvents: Object,
-        isPassword: Boolean
+        formkitInnerClass: Object,
+        borderColor: String,
+        forceWrong: Boolean
     },
     inject: ['runValidation'],
     data() {

@@ -1,4 +1,4 @@
-export default function (error, errorText) {
+const handleAxiosError = (error, errorText) => {
     if (error.response) {
         let status = error.response.status;
         let message = error.response.data?.detail || (errorText || error.message);
@@ -18,3 +18,4 @@ export default function (error, errorText) {
         }
     }
 }
+export { handleAxiosError };

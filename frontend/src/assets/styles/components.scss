@@ -48,16 +48,22 @@
 }
 
 @mixin button-colors {
-    &:not(:where(.active, .wrong)):hover {
-        // background-color: var(--color-background-mute-4);
-    }
-
     &.active {
-        // background-color: var(--purple);
+        background-color: var(--g-colorRed100);
+        color: white;
+
+        &:hover {
+            background-color: var(--g-colorRed0);
+        }
     }
 
-    &.wrong {
-        // background-color: var(--red-0);
-    }
+    &:not(:where(.active)) {
+        color: var(--g-colorGray300s);
+        background-color: var(--g-colorGray150);
+        outline: 1px solid var(--fields-border-color);
 
+        &:hover {
+            background-color: var(--g-colorGray150Hovered);
+        }
+    }
 }

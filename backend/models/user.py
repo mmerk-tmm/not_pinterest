@@ -2,6 +2,7 @@ from backend.db.base_class import Base
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from backend.core.config import env_config
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class User(Base):
@@ -30,8 +31,9 @@ class User(Base):
         ), nullable=True)
     hashed_password = Column(String, index=True, nullable=False)
     is_superuser = Column(Boolean, default=False)
-    picture_id = Column(Integer, ForeignKey("files.id", ondelete='SET NULL'))
-    picture = relationship("File", foreign_keys=[picture_id])
+    picture_id = Column(UUID(as_uuid=True), ForeignKey(
+        "images.id", ondelete='SET NULL'))
+    picture = relationship("Image", foreign_keys=[picture_id])
 
 
 class PersonalInformation(Base):

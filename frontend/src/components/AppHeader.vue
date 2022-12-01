@@ -64,7 +64,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 library.add(faChevronDown, faMagnifyingGlass, faBell, faUser);
 import { vOnClickOutside } from "@vueuse/components";
 import { useAuthStore } from '../stores/auth';
-import handleError from '../composables/errors';
 import { useToast } from "vue-toastification";
 import { storeToRefs } from 'pinia';
 import ModalDialog from '../components/ModalDialog.vue';

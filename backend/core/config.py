@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     OTHER_FILES_FOLDER: str = ASSETS_FOLDER+'other'
     IMAGES_EXTENTION: str = '.png'
     UPLOADS_ROUTE: str = '/uploads'
+    OTHER_FILES_ROUTE: str = '/other/'
     DATETIME_FORMAT: str = "%Y-%m-%d %H:%M"
 
     class Config:

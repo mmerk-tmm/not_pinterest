@@ -1,5 +1,6 @@
 from backend.models.user import *
-from backend.models.file import *
+from backend.models.files import *
+from backend.models.idea import *
 
 from backend.core.config import settings
 from backend.db.base import Base

@@ -28,15 +28,15 @@
     </form>
 </template>
 <script>
-import SelectImage from './SelectImage.vue';
-import FormField from './FormField.vue';
-import FormTextArea from './FormTextArea.vue';
-import { useAuthStore } from '../stores/auth';
-import handleError from '../composables/errors';
+import SelectImage from '../SelectImage.vue';
+import FormField from '../FormField.vue';
+import FormTextArea from '../FormTextArea.vue';
+import { useAuthStore } from '../../stores/auth';
+import handleError from '../../composables/errors';
 import { useToast } from "vue-toastification";
 import { storeToRefs } from 'pinia';
-import { Role } from '../helpers/roles.js';
-import { HTTP } from '../http-common.vue';
+import { Role } from '../../helpers/roles.js';
+import { HTTP } from '../../http-common.vue';
 export default {
     setup() {
         const { userData, userRole } = storeToRefs(useAuthStore());

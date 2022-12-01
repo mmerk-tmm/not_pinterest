@@ -27,12 +27,12 @@ const router = createRouter({
         {
           path: 'edit-profile',
           name: 'Ректировать профиль',
-          component: () => import('../components/EditProfile.vue'),
+          component: () => import('../components/Settings/EditProfile.vue'),
         },
         {
           path: 'personal-information',
           name: 'Персональные данные',
-          component: () => import('../components/PersonalInformation.vue'),
+          component: () => import('../components/Settings/PersonalInformation.vue'),
         }
       ]
     },

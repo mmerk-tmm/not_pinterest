@@ -1,6 +1,6 @@
 from fastapi import Depends, APIRouter, status, UploadFile, File, HTTPException
 from fastapi_jwt_auth import AuthJWT
-from backend.helpers.files import save_file
+from backend.helpers.images import save_image
 from backend.helpers.images import set_picture
 from backend.responses import AUTH_REQUIRED_401, UNAUTHORIZED_401
 from backend.schemas.user import PersonalInformation, PersonalInformationBase, UserInfo, UserModifiableForm
@@ -16,8 +16,8 @@ def update_user_data(UserData: UserModifiableForm = Depends(UserModifiableForm),
     if not db_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="неправильное имя пользователя или пароль")
-    db_image = save_file(upload_file=userPicture,
-                         user_id=db_user.id, force_image=True)
+    db_image = save_image(upload_file=userPicture,
+                         user_id=db_user.id)
     if UserData.username:
         db_user_username = user_cruds.get_user_by_username(
             username=UserData.username)

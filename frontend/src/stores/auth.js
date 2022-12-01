@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { HTTP } from '../http-common.vue';
-import handleError from '../composables/errors'
+import { handleAxiosError } from '../composables/errors'
 import { useSessionStorage } from '@vueuse/core';
 import { Role } from '../helpers/roles.js';
 import router from '../router';
@@ -60,7 +60,7 @@ export const useAuthStore = defineStore({
       }
     },
     setMessage(error) {
-      this.message = handleError(error).message
+      this.message = handleAxiosError(error).message
     },
     logout() {
       this.logined = false;

@@ -36,10 +36,10 @@
     </div>
 </template>
 <script>
-import { HTTP } from '../http-common.vue';
-import FormField from './FormField.vue';
+import { HTTP } from '../../http-common.vue';
+import FormField from '../FormField.vue';
 import { useToast } from "vue-toastification";
-import handleError from '../composables/errors';
+import handleError from '../../composables/errors';
 export default {
     setup() {
         const toast = useToast();
@@ -58,7 +58,7 @@ export default {
     },
     computed: {
         ButtonActive() {
-            return this.gender !== 'unspecified' ? this.originalGender !== this.gender : this.unspecifiedGender.length > 0 && this.originalGender !== this.unspecifiedGender
+            return this.gender !== 'unspecified' ? this.originalGender !== this.gender : this.unspecifiedGender?.length > 0 && this.originalGender !== this.unspecifiedGender
         }
     },
     components: { FormField },
