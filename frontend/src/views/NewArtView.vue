@@ -103,7 +103,7 @@
 import SelectImage from '../components/SelectImage.vue';
 import FormField from '../components/FormField.vue';
 import FormTextArea from '../components/FormTextArea.vue';
-import TopicSelector from '../components/topicSelector.vue';
+import TopicSelector from '../components/topicSelector/index.vue';
 export default {
     components: { SelectImage, FormField, FormTextArea, TopicSelector }
 }

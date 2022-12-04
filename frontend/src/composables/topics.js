@@ -6,7 +6,6 @@ export const useTopicsSearch = () => {
   const cache = reactive({});
   const getTopics = async (text) => {
     try {
-      console.log(cache);
       if (Object.hasOwn(cache, text)) {
         topics.value = cache[text];
         return;

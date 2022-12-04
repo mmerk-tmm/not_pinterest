@@ -1,15 +1,16 @@
 <template>
     <div class="new-idea-wrapper">
         <div class="new-idea-container">
-            <FormField label="Название идеи" placeholder="Добавьте название идеи" v-model="name" :border-radius="10"
-                off-margin not-empty :force-wrong="nameAlreadyExists" />
-            <FormTextArea placeholder="Описание" label="Опишите идею" v-model="description" off-margin not-empty />
+            <FormField label="Название идеи" placeholder="Добавьте название идеи" v-model="name" off-margin not-empty
+                :force-wrong="nameAlreadyExists" :border-radius="10" />
+            <FormTextArea placeholder="Описание" label="Опишите идею" v-model="description" off-margin not-empty
+                :border-radius="10" />
+            <TopicSelector :border-radius="10" />
             <div class="buttons">
                 <div :class="[{ active: buttonActive }, 'send-button']" @click="sendIdea">
                     Отправить
                 </div>
             </div>
-
         </div>
     </div>
 </template>
@@ -23,6 +24,7 @@ import { computed } from '@vue/reactivity';
 import { useToast } from 'vue-toastification';
 import { handleAxiosError } from '../composables/errors';
 import { useRouter } from 'vue-router'
+import TopicSelector from '../components/topicSelector/index.vue';
 
 const router = useRouter();
 const toast = useToast();

@@ -34,8 +34,8 @@ class IdeaCruds(CRUDBase):
             self.create(model=IdeaLike(idea_id=idea_id, user_id=user_id))
             return True
 
-    def search_topic(self, name: str):
-        return self.db.query(Topic).filter(Topic.name.like("%{}%".format(name))).limit(100).all()
+    def search_topic(self, name: str, limit: int = 10):
+        return self.db.query(Topic).filter(Topic.name.like("%{}%".format(name))).limit(limit).all()
 
 
 idea_cruds = IdeaCruds()

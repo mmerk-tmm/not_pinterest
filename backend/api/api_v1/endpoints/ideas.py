@@ -1,5 +1,5 @@
 from typing import List, Union
-from fastapi import HTTPException, Depends, APIRouter, status
+from fastapi import HTTPException, Depends, APIRouter, status, Query
 from fastapi_jwt_auth import AuthJWT
 from backend.crud.crud_idea import idea_cruds
 from backend.helpers.ideas import set_idea_data
@@ -11,12 +11,12 @@ router = APIRouter(tags=['Идеи'], prefix='/ideas')
 
 
 @router.get('/search-topic', response_model=List[Topic])
-def create_idea(name: str):
-    return idea_cruds.search_topic(name=name)
+def create_idea(name: str, limit: int = Query(gt=1, le=50, default=10)):
+    return idea_cruds.search_topic(name=name, limit=limit)
 
 
 @router.post('', response_model=Idea)
-def create_idea(idea_data: CreateIdea, Authorize: AuthJWT = Depends()):
+def create_idea(idea_data: CreateIdea,  Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()
     current_user_id = Authorize.get_jwt_subject()
     if idea_cruds.get_idea_by_name(name=idea_data.name):
