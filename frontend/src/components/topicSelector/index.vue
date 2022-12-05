@@ -9,6 +9,7 @@
                 <div class="icon">
                     <FontAwesomeIcon icon="fa-plus" />
                 </div>
+
             </topicItem>
         </div>
         {{ selectedTopics }}
@@ -41,6 +42,7 @@ const selectTopic = (topic) => {
     //     selectedTopics.value.splice(index)
     // }
     selectedTopics.value.push(topic);
+
 }
 
 </script>
