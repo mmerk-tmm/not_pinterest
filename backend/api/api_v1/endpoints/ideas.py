@@ -47,3 +47,4 @@ def get_ideas(page: int = 1, Authorize: AuthJWT = Depends()):
     ideas = [set_idea_data(idea=idea, user_id=current_user_id)
              for idea in db_ideas]
     return JSONResponse(jsonable_encoder(parse_obj_as(List[IdeaWithLike if current_user_id else Idea], ideas)))
+

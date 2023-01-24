@@ -2,12 +2,13 @@ from typing import List
 from backend.db.base import CRUDBase
 from backend.models.post import Post, PostLike, Keyword
 from backend.models.idea import Idea
+from backend.models.files import Image
 
 
 class PostCruds(CRUDBase):
 
-    def create_post(self, name: str, description: str, user_id: int, idea_id: int):
-        return self.create(Post(name=name, description=description, user_id=user_id, idea_id=idea_id))
+    def create_post(self, name: str, description: str, user_id: int, idea_id: int, db_picture: Image):
+        return self.create(Post(name=name, description=description, user_id=user_id, idea_id=idea_id, picture_id = db_picture.id))
 
     def get_post_by_id(self, post_id: int) -> Post | None:
         return self.get(id=post_id, model=Post)
