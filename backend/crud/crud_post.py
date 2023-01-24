@@ -7,8 +7,17 @@ from backend.models.files import Image
 
 class PostCruds(CRUDBase):
 
-    def create_post(self, name: str, description: str, user_id: int, idea_id: int, db_picture: Image):
-        return self.create(Post(name=name, description=description, user_id=user_id, idea_id=idea_id, picture_id = db_picture.id))
+    def create_post(self, title: str, description: str, user_id: int, url: str, idea_id: int, db_picture: Image):
+        return self.create(
+            Post(
+                title=title,
+                url=url,
+                description=description,
+                user_id=user_id,
+                idea_id=idea_id,
+                image_id=db_picture.id
+            )
+        )
 
     def get_post_by_id(self, post_id: int) -> Post | None:
         return self.get(id=post_id, model=Post)

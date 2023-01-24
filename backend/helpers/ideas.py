@@ -14,4 +14,5 @@ def set_idea_data(idea: Idea, user_id: int = None):
     if user_id:
         idea_obj['liked'] = bool(idea_cruds.get_idea_like_by_user_id(
             user_id=user_id, idea_id=idea.id))
+
     return idea_obj

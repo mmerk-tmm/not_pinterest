@@ -1,5 +1,6 @@
 from typing import List
 from pydantic import BaseModel
+from backend.helpers.forms import form_body
 
 from backend.schemas.user import UserInfo
 
@@ -7,7 +8,12 @@ from backend.schemas.user import UserInfo
 class CreateIdea(BaseModel):
     name: str
     description: str
-    keywords: List[str]
+    # keywords: List[str]
+
+
+@form_body
+class CreateIdeaForm(CreateIdea):
+    ...
 
 
 class Idea(CreateIdea):
