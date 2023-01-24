@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import BaseModel
 
 from backend.schemas.user import UserInfo
@@ -6,6 +7,7 @@ from backend.schemas.user import UserInfo
 class CreateIdea(BaseModel):
     name: str
     description: str
+    keywords: List[str]
 
 
 class Idea(CreateIdea):
@@ -22,4 +24,9 @@ class IdeaWithLike(Idea):
 class Topic(BaseModel):
     id: int
     name: str
-    # count: int
+
+
+class IdeaKeyword(BaseModel):
+    id: int
+    name: str
+    uses: int

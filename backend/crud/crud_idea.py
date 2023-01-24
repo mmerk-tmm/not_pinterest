@@ -1,15 +1,11 @@
 from typing import List
 from backend.db.base import CRUDBase
-from backend.models.idea import Idea, IdeaLike, Topic
-from sqlalchemy import func
+from backend.models.idea import Idea, IdeaLike
 
 
 class IdeaCruds(CRUDBase):
-    def create_idea(self, name: str, description: str, user_id: int):
+    def create_idea(self, *, name: str, description: str, user_id: int):
         return self.create(Idea(name=name, description=description, user_id=user_id))
-
-    def get_idea_by_name(self, name: str) -> Idea | None:
-        return self.db.query(Idea).filter(Idea.name == name).first()
 
     def get_idea_by_id(self, idea_id: int) -> Idea | None:
         return self.get(id=idea_id, model=Idea)
@@ -36,6 +32,9 @@ class IdeaCruds(CRUDBase):
 
     def search_topic(self, name: str, limit: int = 10):
         return self.db.query(Topic).filter(Topic.name.like("%{}%".format(name))).limit(limit).all()
+
+    def search_keywords(self, name: str, limit: int = 10):
+        return self.db.query(Keyword).filter(Keyword.name.like("%{}%".format(name))).limit(limit).all()
 
 
 idea_cruds = IdeaCruds()
