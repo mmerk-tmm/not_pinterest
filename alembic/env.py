@@ -47,7 +47,6 @@ def run_migrations_online() -> None:
         poolclass=pool.NullPool,
     )
     if not database_exists(url):
-        print('asdasd')
         create_database(url)
         target_metadata.create_all(connectable)
 

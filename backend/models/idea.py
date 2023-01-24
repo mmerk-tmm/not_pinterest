@@ -20,7 +20,6 @@ class Idea(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship("User", foreign_keys=[user_id])
-    topic_id = Column(Integer, ForeignKey("topics.id"), nullable=False)
 
 
 class IdeaLike(Base):

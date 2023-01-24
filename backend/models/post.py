@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from backend.core.config import env_config
 from sqlalchemy import func
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class Post(Base):
@@ -14,8 +15,9 @@ class Post(Base):
     description = Column(String(500), nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     time_created = Column(DateTime(timezone=True), server_default=func.now())
-    idea_id = Column(Integer, ForeignKey("topics.id"), nullable=False)
-    image_id = Column(Integer, ForeignKey("images.id"), nullable=False)
+    idea_id = Column(Integer, ForeignKey("ideas.id"), nullable=False)
+    image_id = Column(UUID(as_uuid=True), ForeignKey(
+        "images.id"), nullable=False)
     image = relationship("Image", foreign_keys=[image_id])
 
 
@@ -45,8 +47,8 @@ class PostKeyword(Base):
 
     post_id = Column(Integer, ForeignKey("posts.id"),
                      primary_key=True, nullable=False)
-    keyword_id = Column(Integer, ForeignKey("keywords.name"),
-                        primary_key=True, nullable=False)
+    keyword = Column(String, ForeignKey("keywords.name"),
+                     primary_key=True, nullable=False)
 
 
 class Keyword(Base):
