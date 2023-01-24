@@ -27,7 +27,7 @@ def create_idea(idea_data: CreateIdea,  Authorize: AuthJWT = Depends()):
     return set_idea_data(idea=db_idea)
 
 
-@router.post('/like', response_model=bool)
+@router.post('/{idea_id}/like', response_model=bool)
 def create_idea(idea_id: int, Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()
     current_user_id = Authorize.get_jwt_subject()

@@ -13,7 +13,7 @@
 
  Запускать бекенд так (команда повершелл)
 
-    alembic upgrade head;uvicorn backend.main:app --host 0.0.0.0 --port 3000
+    alembic upgrade head;uvicorn backend.main:app --host localhost --port 3000
 
  Запускать фронтенд так (команда повершелл)
     cd .\frontend\; npm run dev

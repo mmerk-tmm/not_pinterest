@@ -5,7 +5,7 @@ from backend.helpers.images import set_picture
 from backend.responses import AUTH_REQUIRED_401, UNAUTHORIZED_401
 from backend.schemas.user import PersonalInformation, PersonalInformationBase, UserInfo, UserModifiableForm
 from backend.crud.crud_user import user_cruds
-router = APIRouter(tags=['Профили пользователей'])
+router = APIRouter(tags=['Профили пользователей'], prefix='/users')
 
 
 @router.put('/me', responses={**UNAUTHORIZED_401}, response_model=UserInfo)
@@ -31,7 +31,7 @@ def update_user_data(UserData: UserModifiableForm = Depends(UserModifiableForm),
     return user_data
 
 
-@router.put('/personal-information', responses={**UNAUTHORIZED_401}, response_model=PersonalInformation)
+@router.put('/me/personal-information', responses={**UNAUTHORIZED_401}, response_model=PersonalInformation)
 def update_user_data(UserData: PersonalInformationBase, Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()
     current_user_id = Authorize.get_jwt_subject()
@@ -42,7 +42,7 @@ def update_user_data(UserData: PersonalInformationBase, Authorize: AuthJWT = Dep
     return user_cruds.update_personal_information(user_id=current_user_id, gender=UserData.gender).as_dict()
 
 
-@router.get('/personal-information', responses={**UNAUTHORIZED_401}, response_model=PersonalInformation)
+@router.get('/me/personal-information', responses={**UNAUTHORIZED_401}, response_model=PersonalInformation)
 def update_user_data(Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()
     current_user_id = Authorize.get_jwt_subject()

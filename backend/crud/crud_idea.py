@@ -36,5 +36,8 @@ class IdeaCruds(CRUDBase):
     def search_keywords(self, name: str, limit: int = 10):
         return self.db.query(Keyword).filter(Keyword.name.like("%{}%".format(name))).limit(limit).all()
 
+    def get_idea_by_name(self, name: str):
+        return self.db.query(Idea).filter(Idea.name==name).first()
+
 
 idea_cruds = IdeaCruds()
