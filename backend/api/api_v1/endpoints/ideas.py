@@ -3,16 +3,11 @@ from fastapi import HTTPException, Depends, APIRouter, status, Query
 from fastapi_jwt_auth import AuthJWT
 from backend.crud.crud_idea import idea_cruds
 from backend.helpers.ideas import set_idea_data
-from backend.schemas.ideas import CreateIdea, Idea, IdeaWithLike, Topic
+from backend.schemas.ideas import CreateIdea, Idea, IdeaWithLike, IdeaWithUser, IdeaWithUserAndLike
 from pydantic import parse_obj_as
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 router = APIRouter(tags=['Идеи'], prefix='/ideas')
-
-
-@router.get('/search-topic', response_model=List[Topic])
-def create_idea(name: str, limit: int = Query(gt=1, le=50, default=10)):
-    return idea_cruds.search_topic(name=name, limit=limit)
 
 
 @router.post('', response_model=Idea)
@@ -28,7 +23,7 @@ def create_idea(idea_data: CreateIdea,  Authorize: AuthJWT = Depends()):
 
 
 @router.post('/{idea_id}/like', response_model=bool)
-def create_idea(idea_id: int, Authorize: AuthJWT = Depends()):
+def like_post(idea_id: int, Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()
     current_user_id = Authorize.get_jwt_subject()
     if not idea_cruds.get_idea_by_id(idea_id=idea_id):
@@ -39,12 +34,11 @@ def create_idea(idea_id: int, Authorize: AuthJWT = Depends()):
     return db_idea
 
 
-@router.get('', response_model=List[Union[Idea, IdeaWithLike]])
+@router.get('', response_model=List[Union[IdeaWithUser, IdeaWithUserAndLike]])
 def get_ideas(page: int = 1, Authorize: AuthJWT = Depends()):
     Authorize.jwt_optional()
     current_user_id = Authorize.get_jwt_subject()
     db_ideas = idea_cruds.get_ideas(page=page)
     ideas = [set_idea_data(idea=idea, user_id=current_user_id)
              for idea in db_ideas]
-    return JSONResponse(jsonable_encoder(parse_obj_as(List[IdeaWithLike if current_user_id else Idea], ideas)))
-
+    return JSONResponse(jsonable_encoder(parse_obj_as(List[IdeaWithUserAndLike if current_user_id else IdeaWithUser], ideas)))

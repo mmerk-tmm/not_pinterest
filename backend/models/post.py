@@ -14,8 +14,10 @@ class Post(Base):
         int(env_config.get('VITE_MAX_POST_NAME_LENGTH'))), nullable=True)
     description = Column(String(500), nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user = relationship("User", foreign_keys=[user_id])
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     idea_id = Column(Integer, ForeignKey("ideas.id"), nullable=False)
+    idea = relationship("Idea", foreign_keys=[idea_id])
     image_id = Column(UUID(as_uuid=True), ForeignKey(
         "images.id"), nullable=False)
     image = relationship("Image", foreign_keys=[image_id])

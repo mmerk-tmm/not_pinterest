@@ -20,6 +20,9 @@ class Idea(CreateIdea):
     id: int
     created: str
     likes: int
+
+
+class IdeaWithUser(Idea):
     user: UserInfo
 
 
@@ -27,9 +30,8 @@ class IdeaWithLike(Idea):
     liked: bool
 
 
-class Topic(BaseModel):
-    id: int
-    name: str
+class IdeaWithUserAndLike(IdeaWithUser, IdeaWithLike):
+    ...
 
 
 class IdeaKeyword(BaseModel):
