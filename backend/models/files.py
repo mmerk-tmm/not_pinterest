@@ -1,9 +1,13 @@
+import os
 from backend.db.base_class import Base
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from backend.models.user import User
+from sqlalchemy import event
+from pathlib import Path
+from backend.core.config import settings
 
 
 class Image(Base):
@@ -16,6 +20,14 @@ class Image(Base):
     user = relationship("User", foreign_keys=[user_id])
 
 
+@event.listens_for(Image, "after_delete")
+def receive_after_delete(mapper, connection, target):
+    path = '/'.join([settings.IMAGES_FOLDER, str(target.id) +
+                     settings.IMAGES_EXTENTION])
+    if Path(path).exists():
+        os.remove(path)
+
+
 class File(Base):
     __tablename__ = 'files'
 
@@ -24,3 +36,11 @@ class File(Base):
     extension = Column(String, nullable=False)
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
     user = relationship("User", foreign_keys=[user_id])
+
+
+@event.listens_for(File, "after_delete")
+def receive_after_delete(mapper, connection, target):
+    path = os.path.join(settings.OTHER_FILES_FOLDER,
+                        str(target.id)+target.extension)
+    if Path(path).exists():
+        os.remove(path)

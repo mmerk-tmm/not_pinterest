@@ -1,4 +1,5 @@
 from typing import List
+from backend.crud.crud_file import file_cruds
 from backend.db.base import CRUDBase
 from backend.models.post import Post, PostLike, Keyword
 from backend.models.idea import Idea
@@ -47,6 +48,15 @@ class PostCruds(CRUDBase):
 
     def search_keywords(self, name: str, limit: int = 10):
         return self.db.query(Keyword).filter(Keyword.name.like("%{}%".format(name))).limit(limit).all()
+
+    def update_post(self, db_post: Post, title: str, description: str, url: str):
+        db_post.title = title
+        db_post.description = description
+        db_post.url = url
+        self.create(db_post)
+
+    def delete_post(self, db_post: Post):
+        self.delete(db_post)
 
 
 post_cruds = PostCruds()

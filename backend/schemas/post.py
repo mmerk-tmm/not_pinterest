@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from backend.helpers.forms import ValidateJsonWithFormBody
 from backend.schemas.ideas import Idea
 from backend.schemas.user import UserInfo
 
@@ -10,7 +11,7 @@ class PostCreateBase(BaseModel):
     url: str
 
 
-class CreatePost(PostCreateBase):
+class CreatePost(PostCreateBase, ValidateJsonWithFormBody):
     idea_id: int
 
 

@@ -30,14 +30,11 @@ class UserCruds(CRUDBase):
         for var, value in data_obj.items():
             setattr(user, var, value)
         if remove_picture:
-            file_cruds.delete_image(image=user.picture)
+            self.delete(user.picture)
         elif userPic:
             file_cruds.replace_old_picture(
                 model=user, new_picture=userPic)
-        self.db.add(user)
-        self.db.commit()
-        self.db.refresh(user)
-        return user
+        return self.create(user)
 
     def is_admin(self, user_id):
         db_user = self.get_user_by_id(user_id=user_id)

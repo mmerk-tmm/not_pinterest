@@ -4,6 +4,9 @@ from backend.core.config import env_config
 from sqlalchemy import func
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import backref
+
+from backend.models.files import Image
 
 
 class Post(Base):
@@ -20,7 +23,9 @@ class Post(Base):
     idea = relationship("Idea", foreign_keys=[idea_id])
     image_id = Column(UUID(as_uuid=True), ForeignKey(
         "images.id"), nullable=False)
-    image = relationship("Image", foreign_keys=[image_id])
+    # image = relationship(Image, backref=backref(
+    #     "children", cascade="all,delete"))
+    image = relationship(Image, cascade="all,delete", backref="post")
     url = Column(String, nullable=True)
 
 
@@ -31,6 +36,8 @@ class PostLike(Base):
                      primary_key=True, nullable=False)
     post_id = Column(Integer, ForeignKey("posts.id"),
                      primary_key=True, nullable=False)
+    post = relationship(Post, backref=backref(
+        "likes", cascade="all,delete"))
 
 
 class PostComment(Base):
@@ -43,6 +50,8 @@ class PostComment(Base):
     content = Column(String(
         int(env_config.get('VITE_MAX_POST_COMMENT_LENGTH'))
     ), nullable=True)
+    post = relationship(Post, backref=backref(
+        "comments", cascade="all,delete"))
 
 
 class PostKeyword(Base):
@@ -52,6 +61,8 @@ class PostKeyword(Base):
                      primary_key=True, nullable=False)
     keyword = Column(String, ForeignKey("keywords.name"),
                      primary_key=True, nullable=False)
+    post = relationship(Post, backref=backref(
+        "keywords", cascade="all,delete"))
 
 
 class Keyword(Base):

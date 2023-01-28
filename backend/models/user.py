@@ -1,3 +1,4 @@
+from tkinter import Image
 from backend.db.base_class import Base
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
@@ -33,7 +34,7 @@ class User(Base):
     is_superuser = Column(Boolean, default=False)
     picture_id = Column(UUID(as_uuid=True), ForeignKey(
         "images.id", ondelete='SET NULL'))
-    picture = relationship("Image", foreign_keys=[picture_id])
+    picture = relationship(Image, cascade="all,delete", backref="user_profile")
 
 
 class PersonalInformation(Base):
