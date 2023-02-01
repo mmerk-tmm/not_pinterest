@@ -3,7 +3,6 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from backend.core.config import env_config
 from sqlalchemy.dialects.postgresql import UUID
-from backend.models.files import Image
 
 
 class User(Base):
@@ -34,7 +33,8 @@ class User(Base):
     is_superuser = Column(Boolean, default=False)
     picture_id = Column(UUID(as_uuid=True), ForeignKey(
         "images.id", ondelete='SET NULL'))
-    picture = relationship(Image, cascade="all,delete", backref="user_profile")
+    picture = relationship("Image", foreign_keys=[picture_id], cascade="all,delete",
+                           backref="user_profile")
 
 
 class PersonalInformation(Base):

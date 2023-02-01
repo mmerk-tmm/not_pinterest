@@ -6,8 +6,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import backref
 
-from backend.models.files import Image
-
 
 class Post(Base):
     __tablename__ = 'posts'
@@ -23,9 +21,7 @@ class Post(Base):
     idea = relationship("Idea", foreign_keys=[idea_id])
     image_id = Column(UUID(as_uuid=True), ForeignKey(
         "images.id"), nullable=False)
-    # image = relationship(Image, backref=backref(
-    #     "children", cascade="all,delete"))
-    image = relationship(Image, cascade="all,delete", backref="post")
+    image = relationship("Image", cascade="all,delete", backref="post")
     url = Column(String, nullable=True)
 
 
