@@ -1,9 +1,9 @@
-from tkinter import Image
 from backend.db.base_class import Base
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from backend.core.config import env_config
 from sqlalchemy.dialects.postgresql import UUID
+from backend.models.files import Image
 
 
 class User(Base):
