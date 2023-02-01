@@ -1,11 +1,12 @@
-from backend.crud.crud_file import file_cruds
+from backend.crud.crud_file import FileCRUD
 from backend.db.base import CRUDBase
 from backend.models.files import Image
-from backend.schemas.user import UserModifiable
+from backend.schemas.user import UserModifiable, UserRegister
 from backend.models.user import PersonalInformation, User
+from fastapi.encoders import jsonable_encoder
 
 
-class UserCruds(CRUDBase):
+class UserCRUD(CRUDBase):
     def get_user_by_id(self, user_id: int) -> User | None:
         return self.db.query(User).filter(User.id == user_id).first()
 
@@ -22,7 +23,7 @@ class UserCruds(CRUDBase):
         personal_information.gender = gender
         return self.create(personal_information)
 
-    def update(self, user: User, new_user_data: UserModifiable, userPic: Image) -> User:
+    def update_user(self, user: User, new_user_data: UserModifiable, userPic: Image) -> User:
         if user is None:
             raise Exception('Update user failed: user is None')
         data_obj = new_user_data.dict()
@@ -32,7 +33,7 @@ class UserCruds(CRUDBase):
         if remove_picture:
             self.delete(user.picture)
         elif userPic:
-            file_cruds.replace_old_picture(
+            FileCRUD(self.db).replace_old_picture(
                 model=user, new_picture=userPic)
         return self.create(user)
 
@@ -41,6 +42,3 @@ class UserCruds(CRUDBase):
         if not db_user:
             raise Exception('Пользователь не найден')
         return db_user.is_superuser
-
-
-user_cruds = UserCruds()

@@ -5,7 +5,8 @@ from PIL import Image as pillow
 import logging
 import shutil
 from fastapi import UploadFile, HTTPException
-from backend.crud.crud_file import file_cruds
+from backend.crud.crud_file import FileCRUD
+from sqlalchemy.orm import Session
 from pathlib import Path
 logger = logging.getLogger(__name__)
 supported_image_extensions = {
@@ -19,8 +20,8 @@ def set_picture(data: dict, picture: Image):
     return data
 
 
-def save_image(upload_file: UploadFile, user_id: int, resize_image_options=(400, 400), bytes_io_file: io.BytesIO = None, detail_error_message="поврежденный файл"):
-    if (not upload_file or not upload_file.filename) if not bytes_io_file else False:
+def save_image(db: Session, upload_file: UploadFile, user_id: int, resize_image_options=(400, 400), bytes_io_file: io.BytesIO = None, detail_error_message="поврежденное изображение"):
+    if not bytes_io_file and (not upload_file or not upload_file.filename):
         return
     if bytes_io_file:
         originalFileName = bytes_io_file.name
@@ -30,20 +31,24 @@ def save_image(upload_file: UploadFile, user_id: int, resize_image_options=(400,
     suffix = originalFilePath.suffix
     if suffix.lower() not in supported_image_extensions:
         raise HTTPException(
-            status_code=500, detail="Расширение изображения не поддерживается")
+            status_code=422, detail="Расширение изображения не поддерживается")
     if bytes_io_file:
         buf = bytes_io_file
     else:
         buf = io.BytesIO()
         shutil.copyfileobj(upload_file.file, buf)
         buf.seek(0)
+
     try:
         image = pillow.open(buf)
         image.thumbnail(resize_image_options)
-        image_model = file_cruds.create_image(
+        image_model = FileCRUD(db).create_image(
             width=image.width, height=image.height, user_id=user_id)
-        image.save('/'.join([settings.IMAGES_FOLDER,
-                            str(image_model.id)+settings.IMAGES_EXTENTION]))
+        image.save(image_id_to_path(image_model.id))
         return image_model
     except:
-        raise HTTPException(status_code=500, detail=detail_error_message)
+        raise HTTPException(status_code=422, detail=detail_error_message)
+
+
+def image_id_to_path(image_id: int) -> str:
+    return '/'.join([settings.IMAGES_FOLDER, str(image_id)+settings.IMAGES_EXTENTION])

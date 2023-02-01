@@ -3,7 +3,7 @@ from backend.db.base import CRUDBase
 from backend.models.idea import Idea, IdeaLike
 
 
-class IdeaCruds(CRUDBase):
+class IdeaCRUD(CRUDBase):
     def create_idea(self, *, name: str, description: str, user_id: int):
         return self.create(Idea(name=name, description=description, user_id=user_id))
 
@@ -32,6 +32,3 @@ class IdeaCruds(CRUDBase):
 
     def get_idea_by_name(self, name: str):
         return self.db.query(Idea).filter(Idea.name == name).first()
-
-
-idea_cruds = IdeaCruds()

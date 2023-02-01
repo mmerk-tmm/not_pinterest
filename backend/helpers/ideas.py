@@ -1,11 +1,13 @@
 from datetime import datetime
-from backend.crud.crud_idea import idea_cruds
+from backend.crud.crud_idea import IdeaCRUD
 from backend.helpers.images import set_picture
 from backend.models.idea import Idea
 from backend.core.config import settings
+from sqlalchemy.orm import Session
 
 
-def set_idea_data(idea: Idea, user_id: int = None):
+def set_idea_data(idea: Idea, db: Session, user_id: int = None):
+    idea_cruds = IdeaCRUD(db)
     idea_obj = idea.as_dict()
     idea_obj['created'] = idea.time_created.strftime(
         settings.DATETIME_FORMAT)

@@ -32,7 +32,7 @@ class User(Base):
     hashed_password = Column(String, index=True, nullable=False)
     is_superuser = Column(Boolean, default=False)
     picture_id = Column(UUID(as_uuid=True), ForeignKey(
-        "images.id", ondelete='SET NULL'))
+        "images.id", name='users_picture_id_fkey', ondelete='SET NULL'))
     picture = relationship("Image", foreign_keys=[picture_id], cascade="all,delete",
                            backref="user_profile")
 

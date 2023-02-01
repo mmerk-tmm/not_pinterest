@@ -7,16 +7,17 @@ from backend.helpers.forms import form_body
 
 
 class UserUsername(BaseModel):
-    username: str = Query(
-        default=None,
-        min_length=int(env_config.get('VITE_MIN_LOGIN_LENGTH')),
-        max_length=int(env_config.get('VITE_MAX_LOGIN_LENGTH'))
-    )
+    username: str = Query(...,
+                          min_length=int(env_config.get(
+                              'VITE_MIN_LOGIN_LENGTH')),
+                          max_length=int(env_config.get(
+                              'VITE_MAX_LOGIN_LENGTH'))
+                          )
 
 
 class UserAuth(UserUsername):
     password: str = Query(
-        default=None,
+        ...,
         min_length=int(env_config.get('VITE_MIN_PASSWORD_LENGTH'))
     )
 

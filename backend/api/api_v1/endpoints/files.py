@@ -4,16 +4,17 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.responses import FileResponse
 
 from backend.db.db import get_db
-from backend.db.session import SessionLocal
-from backend.crud.crud_file import file_cruds
+
+from backend.crud.crud_file import FileCRUD
 from backend.core.config import settings
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix=settings.UPLOADS_ROUTE, tags=['Файлы'])
 
 
 @router.get('/images/{image_id}', response_class=FileResponse)
-def get_image(image_id):
-    db_image = file_cruds.get_image_by_id(image_id=image_id)
+def get_image(image_id, db: Session = Depends(get_db)):
+    db_image = FileCRUD(db).get_image_by_id(image_id=image_id)
     if not db_image:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     file_path = os.path.join(settings.IMAGES_FOLDER,
@@ -25,8 +26,8 @@ def get_image(image_id):
 
 
 @router.get('/other/{file_id}', response_class=FileResponse)
-def get_image(file_id):
-    db_file = file_cruds.get_file_by_id(file_id=file_id)
+def get_image(file_id, db: Session = Depends(get_db)):
+    db_file = FileCRUD(db).get_file_by_id(file_id=file_id)
     if not db_file:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     file_path = os.path.join(settings.OTHER_FILES_FOLDER,

@@ -3,15 +3,17 @@ from fastapi import HTTPException, Depends, APIRouter, status
 from fastapi_jwt_auth import AuthJWT
 from backend.schemas.error import HTTP_401_UNAUTHORIZED
 from backend.schemas.user import UserAuth, UserInfo
-from backend.crud.crud_user import user_cruds
-from backend.crud.crud_auth import auth_cruds
+from backend.crud.crud_user import UserCRUD
+from backend.crud.crud_auth import AuthCRUD
 from backend.schemas.user import UserRegister
+from backend.db.db import get_db
+from sqlalchemy.orm import Session
 router = APIRouter(tags=['Авторизация'], prefix='/auth')
 
 
 @router.post('/login', response_model=UserInfo, responses={status.HTTP_401_UNAUTHORIZED: {"model": HTTP_401_UNAUTHORIZED}})
-def login(user_in: UserAuth, Authorize: AuthJWT = Depends()):
-    db_user = auth_cruds.login(user_in)
+def login(user_in: UserAuth, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
+    db_user = AuthCRUD(db).login(user_in)
     if not db_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="неправильное имя пользователя или пароль")
@@ -39,17 +41,17 @@ def refresh(Authorize: AuthJWT = Depends()):
 
 
 @router.post("/signup", response_model=UserInfo, status_code=201)
-def create_user_signup(user_in: UserRegister, Authorize: AuthJWT = Depends()) -> Any:
+def create_user_signup(user_in: UserRegister, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)) -> Any:
     """
     Создание пользователя без необходимости последующей авторизации
     """
-    user_exists = user_cruds.get_user_by_username(user_in.username)
+    user_exists = UserCRUD(db).get_user_by_username(user_in.username)
     if user_exists:
         raise HTTPException(
             status_code=400,
             detail="Такой пользователь уже существует",
         )
-    db_user = auth_cruds.create_user(user_in)
+    db_user = AuthCRUD(db).create_user(user_in)
     access_token = Authorize.create_access_token(subject=db_user.id)
     refresh_token = Authorize.create_refresh_token(subject=db_user.id)
     Authorize.set_access_cookies(access_token)

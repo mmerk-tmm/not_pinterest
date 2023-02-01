@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     OTHER_FILES_ROUTE: str = '/other/'
     DATETIME_FORMAT: str = "%Y-%m-%d %H:%M"
 
+    TEST_USER_USERNAME: str = "test_user"
+    TEST_USER_USERNAME_2: str = "test_user_2"
+    TEST_ADMIN_USERNAME: str = "test_admin"
+
     class Config:
         case_sensitive = True  # 4
 

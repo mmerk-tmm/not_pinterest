@@ -1,12 +1,11 @@
 from typing import List
-from backend.crud.crud_file import file_cruds
 from backend.db.base import CRUDBase
 from backend.models.post import Post, PostLike, Keyword
 from backend.models.idea import Idea
 from backend.models.files import Image
 
 
-class PostCruds(CRUDBase):
+class PostCRUD(CRUDBase):
 
     def create_post(self, title: str, description: str, user_id: int, url: str, idea_id: int, db_picture: Image):
         return self.create(
@@ -57,6 +56,3 @@ class PostCruds(CRUDBase):
 
     def delete_post(self, db_post: Post):
         self.delete(db_post)
-
-
-post_cruds = PostCruds()

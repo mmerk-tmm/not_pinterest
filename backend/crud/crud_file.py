@@ -2,7 +2,7 @@ from backend.db.base import CRUDBase
 from backend.models.files import Image, File
 
 
-class FileCruds(CRUDBase):
+class FileCRUD(CRUDBase):
     def replace_old_picture(self, model, new_picture):
         picture: Image = model.picture
         model.picture = new_picture
@@ -23,6 +23,3 @@ class FileCruds(CRUDBase):
 
     def get_file_by_id(self, file_id) -> File | None:
         return self.get(model=File, id=file_id)
-
-
-file_cruds = FileCruds()
