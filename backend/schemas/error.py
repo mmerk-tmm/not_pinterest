@@ -25,3 +25,7 @@ class USER_NOT_FOUND(BaseModel):
 
 class NOT_ENOUGH_RIGHTS_403(BaseModel):
     detail: str = "Недостаточно прав"
+
+
+class IDEA_WITH_THIS_NAME_ALREADY_EXISTS(BaseModel):
+    detail: str = "Идея с таким именем уже существует"

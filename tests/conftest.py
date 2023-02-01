@@ -89,7 +89,7 @@ def normal_user_token_cookies(client: TestClient, db_session):
 
 
 @pytest.fixture(scope="function")  # new function
-def authentication_token_from_username_2(client: TestClient, db_session):
+def normal_user_2_token_cookies(client: TestClient, db_session):
     return authentication_token_from_username(
         client=client, username=settings.TEST_USER_USERNAME_2, db=db_session
     )

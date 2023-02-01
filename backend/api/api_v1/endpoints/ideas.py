@@ -3,6 +3,7 @@ from fastapi import HTTPException, Depends, APIRouter, status, Query
 from fastapi_jwt_auth import AuthJWT
 from backend.crud.crud_idea import IdeaCRUD
 from backend.helpers.ideas import set_idea_data
+from backend.responses import AUTH_REQUIRED_401, IDEA_WITH_THIS_NAME_ALREADY_EXISTS_400
 from backend.schemas.ideas import CreateIdea, Idea, IdeaWithLike, IdeaWithUser, IdeaWithUserAndLike
 from pydantic import parse_obj_as
 from fastapi.responses import JSONResponse
@@ -12,7 +13,7 @@ from fastapi.encoders import jsonable_encoder
 router = APIRouter(tags=['Идеи'], prefix='/ideas')
 
 
-@router.post('', response_model=Idea)
+@router.post('', response_model=Idea, responses={**IDEA_WITH_THIS_NAME_ALREADY_EXISTS_400, **AUTH_REQUIRED_401})
 def create_idea(idea_data: CreateIdea,  Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
     Authorize.jwt_required()
     current_user_id = Authorize.get_jwt_subject()

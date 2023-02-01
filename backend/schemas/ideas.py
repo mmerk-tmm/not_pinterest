@@ -1,14 +1,17 @@
 from typing import List
 from pydantic import BaseModel
 from backend.helpers.forms import form_body
+from backend.core.config import env_config
+from fastapi import Query
 
 from backend.schemas.user import UserInfo
 
 
 class CreateIdea(BaseModel):
-    name: str
-    description: str
-    # keywords: List[str]
+    name: str = Query(..., max_length=env_config.get("VITE_MAX_IDEA_NAME_LENGTH"),
+                      min_length=env_config.get("VITE_MIN_IDEA_NAME_LENGTH"))
+    description: str = Query(..., max_length=env_config.get(
+        "VITE_MAX_IDEA_DESCRIPTION_LENGTH"))
 
 
 @form_body
