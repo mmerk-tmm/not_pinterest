@@ -29,7 +29,7 @@ def get_post(post_id: int, Authorize: AuthJWT = Depends()):
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Пост не найден")
-    return get_post_json(post=post, current_user_id=current_user_id)
+    return get_post_json(post=post, current_user_id=current_user_id, idea_data=True, user_data=True)
 
 
 @router.post('', response_model=PostBase)
