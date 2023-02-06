@@ -33,5 +33,5 @@ def test_get_me(client: TestClient, normal_user_token_cookies):
 def test_get_user_info(client: TestClient, normal_user_token_cookies, input_data: dict, expected_status_code: int, files: dict):
     response = client.put(
         "/users/me", cookies=normal_user_token_cookies, data=input_data, files=files)
-
+    print(response.json())
     assert response.status_code == expected_status_code

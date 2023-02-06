@@ -8,10 +8,10 @@ from backend.schemas.user import UserInfo
 
 
 class CreateIdea(BaseModel):
-    name: str = Query(..., max_length=env_config.get("VITE_MAX_IDEA_NAME_LENGTH"),
-                      min_length=env_config.get("VITE_MIN_IDEA_NAME_LENGTH"))
-    description: str = Query(..., max_length=env_config.get(
-        "VITE_MAX_IDEA_DESCRIPTION_LENGTH"))
+    name: str = Query(..., max_length=int(env_config.get("VITE_MAX_IDEA_NAME_LENGTH")),
+                      min_length=int(env_config.get("VITE_MIN_IDEA_NAME_LENGTH")))
+    description: str = Query(..., max_length=int(env_config.get(
+        "VITE_MAX_IDEA_DESCRIPTION_LENGTH")))
 
 
 @form_body

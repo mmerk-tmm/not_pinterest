@@ -13,7 +13,7 @@ from fastapi.encoders import jsonable_encoder
 router = APIRouter(tags=['Идеи'], prefix='/ideas')
 
 
-@router.post('', response_model=Idea, responses={**IDEA_WITH_THIS_NAME_ALREADY_EXISTS_400, **AUTH_REQUIRED_401})
+@router.post('', response_model=Idea, responses={**IDEA_WITH_THIS_NAME_ALREADY_EXISTS_400, **AUTH_REQUIRED_401}, status_code=status.HTTP_201_CREATED)
 def create_idea(idea_data: CreateIdea,  Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
     Authorize.jwt_required()
     current_user_id = Authorize.get_jwt_subject()
@@ -23,7 +23,7 @@ def create_idea(idea_data: CreateIdea,  Authorize: AuthJWT = Depends(), db: Sess
                             detail="Идея с таким именем уже существует")
     db_idea = idea_cruds.create_idea(
         name=idea_data.name, description=idea_data.description, user_id=current_user_id)
-    return set_idea_data(idea=db_idea)
+    return set_idea_data(idea=db_idea, db=db, user_id=current_user_id)
 
 
 @router.post('/{idea_id}/like', response_model=bool)
@@ -45,6 +45,6 @@ def get_ideas(page: int = 1, Authorize: AuthJWT = Depends(), db: Session = Depen
     current_user_id = Authorize.get_jwt_subject()
     idea_cruds = IdeaCRUD(db)
     db_ideas = idea_cruds.get_ideas(page=page)
-    ideas = [set_idea_data(idea=idea, user_id=current_user_id)
+    ideas = [set_idea_data(idea=idea, user_id=current_user_id, db=db)
              for idea in db_ideas]
     return JSONResponse(jsonable_encoder(parse_obj_as(List[IdeaWithUserAndLike if current_user_id else IdeaWithUser], ideas)))
