@@ -1,9 +1,10 @@
 ## Памятка
+
 Создание миграции
 
     alembic revision --autogenerate -m "название миграции"
 
-команда выполнит операции обновления, исходя из текущей версии базы данных  , к заданной целевой редакции head тоесть последней
+команда выполнит операции обновления, исходя из текущей версии базы данных , к заданной целевой редакции head тоесть последней
 
     alembic upgrade head
 
@@ -11,17 +12,17 @@
 
     alembic stamp head
 
- Запускать бекенд так (команда повершелл)
+Запускать бекенд так (команда повершелл)
 
-    alembic upgrade head;uvicorn backend.main:app --host localhost --port 3000
+    alembic upgrade head;uvicorn backend.main:app --host localhost --port 3000 --reload
 
- Запускать фронтенд так (команда повершелл)
-    cd .\frontend\; npm run dev
+Запускать фронтенд так (команда повершелл)
+cd .\frontend\; npm run dev
 
-разберу подребней запуск сервера `uvicorn main:app --host 0.0.0.0 --port 3000`
+разберу подребней запуск сервера `uvicorn backend.main:app --host localhost --port 3000 --reload`
 `main` - название файла
 `app` - экземпляр fastapi в этом файле
-`--host 0.0.0.0` - адрес сервера 0.0.0.0 это локалхост 
+`--host 0.0.0.0` - адрес сервера 0.0.0.0 это локалхост
 `--port 3000` - порт
 
 чтоб запустить на пустой базе данных раскоментируй строчку в файле
@@ -32,5 +33,3 @@ backend/db/session.py
 `Base.metadata.create_all(engine)`
 
 на следущие запуски закоментруй
-
-
