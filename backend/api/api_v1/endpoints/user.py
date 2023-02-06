@@ -7,6 +7,7 @@ from backend.schemas.user import PersonalInformation, PersonalInformationBase, U
 from backend.crud.crud_user import UserCRUD
 from backend.db.db import get_db
 from sqlalchemy.orm import Session
+from backend.crud.crud_post import PostCRUD
 router = APIRouter(tags=['Профили пользователей'], prefix='/users')
 
 
@@ -86,3 +87,11 @@ def get_user_info(Authorize: AuthJWT = Depends(),  db: Session = Depends(get_db)
     user_data = user.as_dict()
     user_data = set_picture(user_data, user.picture)
     return user_data
+
+@router.get('/{user_id}/posts') #получение постов пользователя
+def get_user_posts(user_id: int, page: int, db: Session = Depends(get_db)):
+    if not UserCRUD(db).get_user_by_id(user_id=user_id):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Пользователь не найден")
+    post_cruds = PostCRUD(db)
+    return post_cruds.get_user_posts(page=page, user_id=user_id)

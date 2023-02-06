@@ -5,7 +5,7 @@ from backend.crud.crud_post import PostCRUD
 from backend.crud.crud_user import UserCRUD
 from backend.helpers.images import save_image
 from backend.helpers.posts_helpers import get_post_json
-from backend.schemas.post import CreatePost, PostCreateBase, PostUserWithIdea,  PostBase
+from backend.schemas.post import CreateComment, CreatePost, PostCreateBase, PostUserWithIdea,  PostBase
 from fastapi import Depends, APIRouter, status, UploadFile, File, HTTPException
 from fastapi import HTTPException, Depends, APIRouter, status
 from fastapi_jwt_auth import AuthJWT
@@ -31,7 +31,7 @@ def get_post(post_id: int, Authorize: AuthJWT = Depends(), db: Session = Depends
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Пост не найден")
-    return get_post_json(post=post, current_user_id=current_user_id, idea_data=True, user_data=True)
+    return get_post_json(post=post, current_user_id=current_user_id, idea_data=True, user_data=True, db=db)
 
 
 @router.post('', response_model=PostBase)
@@ -53,7 +53,7 @@ def create_post(post_data: CreatePost, post_image: UploadFile = File(...),
         db_picture=db_image,
         idea_id=post_data.idea_id
     )
-    db_post_obj = get_post_json(post=db_post, current_user_id=current_user_id)
+    db_post_obj = get_post_json(post=db_post, current_user_id=current_user_id, db=db)
     return db_post_obj
 
 
@@ -82,7 +82,7 @@ def update_post(post_id: int, post_data: PostCreateBase,
         url=post_data.url,
     )
     db_post_obj = get_post_json(
-        post=db_post, current_user_id=current_user_id)
+        post=db_post, current_user_id=current_user_id, db=db)
     return db_post_obj
 
 
@@ -115,7 +115,7 @@ def delete_post(post_id: int, Authorize: AuthJWT = Depends(), db: Session = Depe
     db_user = user_cruds.get_user_by_id(current_user_id)
     if not db_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="неправильное имя пользователя или пароль")
+                            detail="Неправильное имя пользователя или пароль")
     post_cruds = PostCRUD(db)
     db_post = post_cruds.get_post_by_id(post_id=post_id)
     if not db_post:
@@ -125,3 +125,21 @@ def delete_post(post_id: int, Authorize: AuthJWT = Depends(), db: Session = Depe
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Вы не можете редактировать этот пост")
     post_cruds.delete_post(db_post=db_post)
+
+@router.post('/{post_id}/comments')
+def create_post_comment(post_id: int, post_data: CreateComment, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
+    Authorize.jwt_required()
+    current_user_id = Authorize.get_jwt_subject()
+    user_cruds = UserCRUD(db)
+    db_user = user_cruds.get_user_by_id(current_user_id)
+    if not db_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Неправильное имя пользователя или пароль")
+    post_cruds = PostCRUD(db)
+    db_post = post_cruds.get_post_by_id(post_id=post_id)
+    if not db_post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Пост не найден")
+    return post_cruds.create_comment(
+        user_id=current_user_id, post=db_post, text=post_data.text
+    )

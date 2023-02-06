@@ -17,7 +17,7 @@ class Post(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     user = relationship("User", foreign_keys=[user_id])
     time_created = Column(DateTime(timezone=True), server_default=func.now())
-    idea_id = Column(Integer, ForeignKey("ideas.id"), nullable=False)
+    idea_id = Column(Integer, ForeignKey("ideas.id", ondelete='SET NULL'), nullable=True)
     idea = relationship("Idea", foreign_keys=[idea_id])
     image_id = Column(UUID(as_uuid=True), ForeignKey(
         "images.id"), nullable=False)
@@ -66,3 +66,4 @@ class Keyword(Base):
 
     name = Column(String(
         int(env_config.get('VITE_MAX_KEYWORD_NAME_LENGTH'))), primary_key=True, nullable=False)
+
