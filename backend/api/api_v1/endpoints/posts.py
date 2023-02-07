@@ -5,7 +5,7 @@ from backend.crud.crud_post import PostCRUD
 from backend.crud.crud_user import UserCRUD
 from backend.helpers.images import save_image
 from backend.helpers.posts_helpers import get_post_json
-from backend.schemas.post import CreateComment, CreatePost, PostCreateBase, PostUserWithIdea,  PostBase
+from backend.schemas.post import CreateComment, CreatePost, PostComment, PostCreateBase, PostUserWithIdea,  PostBase
 from fastapi import Depends, APIRouter, status, UploadFile, File, HTTPException
 from fastapi import HTTPException, Depends, APIRouter, status
 from fastapi_jwt_auth import AuthJWT
@@ -126,7 +126,7 @@ def delete_post(post_id: int, Authorize: AuthJWT = Depends(), db: Session = Depe
                             detail="Вы не можете редактировать этот пост")
     post_cruds.delete_post(db_post=db_post)
 
-@router.post('/{post_id}/comments')
+@router.post('/{post_id}/comments', response_model=PostComment)
 def create_post_comment(post_id: int, post_data: CreateComment, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
     Authorize.jwt_required()
     current_user_id = Authorize.get_jwt_subject()

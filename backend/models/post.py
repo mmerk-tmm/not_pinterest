@@ -43,6 +43,7 @@ class PostComment(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     post_id = Column(Integer, ForeignKey("posts.id"), nullable=False)
     time_created = Column(DateTime(timezone=True), server_default=func.now())
+    time_edited = Column(DateTime(timezone=True), server_default=func.now(), server_onupdate=func.now())
     content = Column(String(
         int(env_config.get('VITE_MAX_POST_COMMENT_LENGTH'))
     ), nullable=True)

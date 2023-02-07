@@ -39,3 +39,17 @@ class PostWithIdea(PostBase):
 
 class CreateComment(BaseModel):
     text: str = Query(..., max_length=int(env_config.get("VITE_MAX_POST_COMMENT_LENGTH")), min_length=int(env_config.get("VITE_MIN_POST_COMMENT_LENGTH")))
+
+class PostComment(BaseModel):
+    user_id: int
+    id: int
+    post_id: int
+    content: str
+    time_created: datetime
+    time_edited: datetime
+    
+    class Config:
+        orm_mode = True
+
+# class PostCommentWithPostInformation(PostComment):
+#     post: PostWithUser
