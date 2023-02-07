@@ -22,4 +22,4 @@ class CommentCRUD(CRUDBase):
 
     def update_comment(self, db_comment: PostComment, text: str):
         db_comment.text = text
-        self.create(db_comment)
+        return self.update(db_comment)

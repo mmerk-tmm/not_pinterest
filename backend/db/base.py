@@ -23,3 +23,8 @@ class CRUDBase:
     def delete(self, model):
         self.db.delete(model)
         self.db.commit()
+    
+    def update(self, model):
+        self.db.refresh(model)
+        self.db.commit()
+        return model

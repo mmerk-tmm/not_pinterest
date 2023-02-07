@@ -14,30 +14,32 @@ from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 from backend.db.db import get_db
 
-router = APIRouter(tags=['Комметарии'], prefix='/comments')
+router = APIRouter(tags=['Комментарии'], prefix='/comments')
 
-@router.put('{comment_id}', response_model=PostComment)
-def update_comment(comment_id: int, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
+@router.put('/{comment_id}', response_model=PostComment)
+def update_comment(comment_id: int, comment_data: CreateComment, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
     Authorize.jwt_required()
     current_user_id = Authorize.get_jwt_subject()
-    comment = CommentCRUD(db).get_comment_by_id(comment_id=comment_id)
+    comment_cruds = CommentCRUD(db)
+    comment = comment_cruds.get_comment_by_id(comment_id=comment_id)
     if not comment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Комментарий не найден")
-    return get_post_json(comment=comment, current_user_id=current_user_id, db=db)
+    if comment.user_id != current_user_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Вы не можете изменить чужой комментарий")
+    return comment_cruds.update_comment(db_comment=comment, text=comment_data.text)
 
-@router.delete('{comment_id}/delete', response_model=PostComment)
+@router.delete('/{comment_id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete_comment(comment_id: int, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
     Authorize.jwt_required()
     current_user_id = Authorize.get_jwt_subject()
-    comment = CommentCRUD(db).get_comment_by_id(comment_id=comment_id)
+    comment_cruds = CommentCRUD(db)
+    comment = comment_cruds.get_comment_by_id(comment_id=comment_id)
     if not comment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Комментарий не найден")
     if comment.user_id != current_user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Вы не можете удалить чужой комментарий")
-    CommentCRUD(db).delete_comment(db_comment=comment)
-    return get_post_json(comment=comment, current_user_id=current_user_id, db=db)
-
-# Не работает, надо сделоть
+    comment_cruds.delete_comment(db_comment=comment)
