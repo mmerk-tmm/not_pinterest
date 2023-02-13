@@ -1,15 +1,17 @@
 from typing import List
 from backend.db.base import CRUDBase
-from backend.models.post import Post, PostComment, PostLike, Keyword
-from backend.models.idea import Idea
+from backend.models.post import KeywordLike, Post, PostComment, PostLike, Keyword
+from backend.models.idea import Idea, IdeaLike
 from backend.models.files import Image
+from backend.models.user import UserLike
+from sqlalchemy import or_
 
 
 class PostCRUD(CRUDBase):
-    
+
     def get_user_posts(self, page, user_id, page_size=20):
         end = page * page_size
-        return self.db.query(Post).filter(Post.user_id==user_id).order_by(Post.id.desc()).slice(end-page_size, end).all()
+        return self.db.query(Post).filter(Post.user_id == user_id).order_by(Post.id.desc()).slice(end-page_size, end).all()
 
     def create_post(self, title: str, description: str, user_id: int, url: str, idea_id: int, db_picture: Image):
         return self.create(
@@ -60,6 +62,14 @@ class PostCRUD(CRUDBase):
 
     def delete_post(self, db_post: Post):
         self.delete(db_post)
-    
+
     def create_comment(self, user_id, post, text):
         return self.create(PostComment(user_id=user_id, post=post, content=text))
+
+    def get_comments(self, post_id, page, page_size=10):
+        end = page * page_size
+        return self.db.query(PostComment).filter(PostComment.post_id == post_id).order_by(PostComment.id.desc()).slice(end-page_size, end).all()
+
+    def get_last_recommendations(self, user_id, page, page_size=10):
+        end = page*page_size
+        return self.db.query(Post).join(IdeaLike, UserLike, KeywordLike).filter(or_(IdeaLike.user_id == user_id, UserLike.user_id == user_id, KeywordLike.user_id == user_id)).order_by(Post.id.desc()).slice(end-page_size, end).all()

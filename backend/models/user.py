@@ -1,6 +1,6 @@
 from backend.db.base_class import Base
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from backend.core.config import env_config
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -35,6 +35,19 @@ class User(Base):
         "images.id", name='users_picture_id_fkey', ondelete='SET NULL'))
     picture = relationship("Image", foreign_keys=[picture_id], cascade="all,delete",
                            backref="user_profile")
+
+
+class UserLike(Base):
+    __tablename__ = 'users_likes'
+
+    user_id = Column(Integer, ForeignKey("users.id"),
+                     primary_key=True, nullable=False)
+    liked_user_id = Column(Integer, ForeignKey("users.id"),
+                           primary_key=True, nullable=False)
+    user = relationship("User", foreign_keys=[user_id], backref=backref(
+        "liked", cascade="all,delete"))
+    liked_user = relationship("User", foreign_keys=[
+                              liked_user_id], backref=backref("likes", cascade="all,delete"))
 
 
 class PersonalInformation(Base):

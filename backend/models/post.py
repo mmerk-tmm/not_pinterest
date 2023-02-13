@@ -17,11 +17,12 @@ class Post(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     user = relationship("User", foreign_keys=[user_id])
     time_created = Column(DateTime(timezone=True), server_default=func.now())
-    idea_id = Column(Integer, ForeignKey("ideas.id", ondelete='SET NULL'), nullable=True)
+    idea_id = Column(Integer, ForeignKey(
+        "ideas.id", ondelete='SET NULL'), nullable=True)
     idea = relationship("Idea", foreign_keys=[idea_id])
     image_id = Column(UUID(as_uuid=True), ForeignKey(
         "images.id"), nullable=False)
-    image = relationship("Image", cascade="all,delete", backref="post")
+    picture = relationship("Image", cascade="all,delete", backref="post")
     url = Column(String, nullable=True)
 
 
@@ -43,7 +44,8 @@ class PostComment(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     post_id = Column(Integer, ForeignKey("posts.id"), nullable=False)
     time_created = Column(DateTime(timezone=True), server_default=func.now())
-    time_edited = Column(DateTime(timezone=True), server_default=func.now(), server_onupdate=func.now())
+    time_edited = Column(DateTime(timezone=True),
+                         server_default=func.now(), server_onupdate=func.now())
     content = Column(String(
         int(env_config.get('VITE_MAX_POST_COMMENT_LENGTH'))
     ), nullable=True)
@@ -56,15 +58,27 @@ class PostKeyword(Base):
 
     post_id = Column(Integer, ForeignKey("posts.id"),
                      primary_key=True, nullable=False)
-    keyword = Column(String, ForeignKey("keywords.name"),
-                     primary_key=True, nullable=False)
+    keyword_id = Column(Integer, ForeignKey("keywords.id"),
+                        primary_key=True, nullable=False)
+    keyword = relationship("Keyword", foreign_keys=[
+                           keyword_id], backref=backref("posts", cascade="all,delete"))
     post = relationship(Post, backref=backref(
         "keywords", cascade="all,delete"))
 
 
 class Keyword(Base):
     __tablename__ = 'keywords'
-
+    id = Column(Integer, primary_key=True, index=True)
     name = Column(String(
-        int(env_config.get('VITE_MAX_KEYWORD_NAME_LENGTH'))), primary_key=True, nullable=False)
+        int(env_config.get('VITE_MAX_KEYWORD_NAME_LENGTH'))), nullable=False)
 
+
+class KeywordLike(Base):
+    __tablename__ = 'keywords_likes'
+
+    user_id = Column(Integer, ForeignKey("users.id"),
+                     primary_key=True, nullable=False)
+    keyword_id = Column(Integer, ForeignKey("keywords.id"),
+                        primary_key=True, nullable=False)
+    keyword = relationship(Keyword, backref=backref(
+        "likes", cascade="all,delete"))

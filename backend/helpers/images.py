@@ -1,3 +1,4 @@
+from uuid import UUID
 from backend.models.files import Image
 from backend.core.config import settings
 import io
@@ -52,3 +53,7 @@ def save_image(db: Session, upload_file: UploadFile, user_id: int, resize_image_
 
 def image_id_to_path(image_id: int) -> str:
     return '/'.join([settings.IMAGES_FOLDER, str(image_id)+settings.IMAGES_EXTENTION])
+
+
+def image_id_to_url(image_id: UUID) -> str:
+    return ''.join([settings.SERVER_LINK, settings.API_V1_STR, settings.UPLOADS_ROUTE, '/images/', str(image_id)])
