@@ -1,0 +1,69 @@
+@use '@/assets/styles/helpers';
+@use "@/assets/styles/_colors.scss" as *;
+@mixin button {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: $color-gray-roboflow-300;
+    text-align: center;
+
+    &.wrong {
+        background-color: $rose-madder;
+    }
+
+    &.active {
+        background: black;
+        color: white;
+        cursor: pointer;
+    }
+
+    gap: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    color: $color-text;
+
+
+    .icon {
+        @include helpers.flex-center;
+
+        svg {
+            height: 25px;
+        }
+    }
+
+    .text {
+        text-align: center;
+    }
+}
+
+@mixin button-sizes {
+    width: 40px;
+    height: 40px;
+
+    svg {
+        height: 18px;
+        width: 18px;
+    }
+}
+
+@mixin button-colors {
+    &.active {
+        background-color: $g-colorRed100;
+        color: white;
+
+        &:hover {
+            background-color: $g-colorRed0;
+        }
+    }
+
+    &:not(:where(.active)) {
+        color: $g-colorGray300;
+        background-color: $g-colorGray150;
+        outline: 1px solid $fields-border-color;
+
+        &:hover {
+            background-color: $g-colorGray150Hovered;
+        }
+    }
+}

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 from pydantic import BaseModel
 from backend.helpers.forms import form_body
@@ -21,20 +22,28 @@ class CreateIdeaForm(CreateIdea):
 
 class Idea(CreateIdea):
     id: int
-    created: str
+    created: datetime
     likes: int
+
+    class Config:
+        orm_mode = True
 
 
 class IdeaWithUser(Idea):
     user: UserInfo
 
+    class Config:
+        orm_mode = True
+
 
 class IdeaWithLike(Idea):
-    liked: bool
+    liked: bool = False
 
 
 class IdeaWithUserAndLike(IdeaWithUser, IdeaWithLike):
-    ...
+
+    class Config:
+        orm_mode = True
 
 
 class IdeaKeyword(BaseModel):

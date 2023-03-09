@@ -1,17 +1,17 @@
-from backend.models.user import *
-from backend.models.files import *
-from backend.models.idea import *
-from backend.models.post import *
+
 
 from backend.core.config import settings
-from backend.db.base import Base
-from logging.config import fileConfig
+from backend.db.base_class import Base
+
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-
+from backend.models.user import *
+from backend.models.files import *
+from backend.models.idea import *
+from backend.models.post import *
 config = context.config
 target_metadata = Base.metadata
 
@@ -48,7 +48,7 @@ def run_migrations_online() -> None:
     )
     if not database_exists(url):
         create_database(url)
-        target_metadata.create_all(connectable)
+    target_metadata.create_all(connectable)
 
     with connectable.connect() as connection:
         context.configure(

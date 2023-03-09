@@ -1,8 +1,10 @@
 from backend.db.base_class import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, scoped_session
 from backend.core.config import env_config
 from sqlalchemy.sql import func
+from backend.db.session import SessionLocal
+session = scoped_session(SessionLocal)
 
 
 class Idea(Base):
@@ -18,8 +20,15 @@ class Idea(Base):
             int(env_config.get('VITE_MAX_IDEA_DESCRIPTION_LENGTH'))
         ), nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    time_created = Column(DateTime(timezone=True), server_default=func.now())
+    created = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship("User", foreign_keys=[user_id])
+
+    @property
+    def likes(self):
+        if not hasattr(self, '_likes'):
+            self._likes = session.query(
+                IdeaLike).filter_by(idea_id=self.id).count()
+        return self._likes
 
 
 class IdeaLike(Base):
@@ -30,40 +39,15 @@ class IdeaLike(Base):
     idea_id = Column(Integer, ForeignKey("ideas.id"),
                      primary_key=True, nullable=False)
     user = relationship("User", foreign_keys=[user_id])
+    idea = relationship(Idea, foreign_keys=[idea_id])
 
 
-# class Topic(Base):
-#     __tablename__ = 'topics'
-#     id = Column(Integer, primary_key=True, index=True)
-#     name = Column(
-#         String(
-#             int(env_config.get('VITE_MAX_TOPIC_NAME_LENGTH'))
-#         ), nullable=True, unique=True)
+class IdeaKeyword(Base):
+    __tablename__ = 'ideas_keywords'
 
-
-# class IdeaTopic(Base):
-#     __tablename__ = 'ideas_topics'
-#     idea_id = Column(Integer, ForeignKey("ideas.id"),
-#                      primary_key=True, nullable=False)
-#     topic_id = Column(Integer, ForeignKey("topics.id"),
-#                       primary_key=True, nullable=False)
-#     topic = relationship("Topic", foreign_keys=[topic_id])
-
-
-# class IdeaKeyword(Base):
-#     __tablename__ = 'ideas_keywords'
-#     idea_id = Column(Integer, ForeignKey("ideas.id"),
-#                      primary_key=True, nullable=False)
-#     keyword_id = Column(Integer, ForeignKey("keywords.name"),
-#                         primary_key=True, nullable=False)
-#     keyword = relationship("Keyword", foreign_keys=[keyword_id])
-
-
-# class Keyword(Base):
-#     __tablename__ = 'keywords'
-
-#     name = Column(
-#         String(
-#             int(env_config.get('VITE_MAX_KEYWORD_NAME_LENGTH'))
-#         ), nullable=False, unique=True, primary_key=True)
-#     uses = Column(Integer, default=0)
+    idea_id = Column(Integer, ForeignKey("ideas.id"),
+                     primary_key=True, nullable=False)
+    keyword_id = Column(Integer, ForeignKey("keywords.id"),
+                        primary_key=True, nullable=False)
+    idea = relationship(Idea, foreign_keys=[idea_id])
+    keyword = relationship("Keyword", foreign_keys=[keyword_id])

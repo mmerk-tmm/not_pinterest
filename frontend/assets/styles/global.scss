@@ -1,0 +1,31 @@
+#__nuxt,
+html,
+body {
+    height: 100%;
+}
+
+body {
+    background-color: $color-background;
+    margin: 0;
+    padding: 0;
+}
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+    transition: color 0.2s, background-color 0.2s, border-color 0.2s,
+        opacity 0.2s;
+    font-family: "Open Sans", sans-serif;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: $color-gray-roboflow-400;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: $color-gray-roboflow-600;
+    border-radius: 10px;
+}

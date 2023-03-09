@@ -1,5 +1,5 @@
 from pydantic import AnyHttpUrl, BaseSettings, BaseModel
-from typing import List, Literal, Optional, Tuple, get_args
+from typing import List, Optional
 from dotenv import dotenv_values
 
 

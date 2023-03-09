@@ -10,7 +10,7 @@ from backend.schemas.post import CreateComment, CreatePost, PostComment, PostCre
 from fastapi import Depends, APIRouter, status, UploadFile, File, HTTPException
 from fastapi import HTTPException, Depends, APIRouter, status
 from fastapi_jwt_auth import AuthJWT
-from backend.helpers.auth_helper import validate_authorized_user
+from backend.helpers.auth_helper import Authenticate
 
 from sqlalchemy.orm import Session
 from backend.db.db import get_db
@@ -18,11 +18,16 @@ router = APIRouter(tags=['Посты'], prefix='/posts')
 
 
 @router.get('/last', response_model=List[PostUserWithIdea])
-def get_posts(page: int = 1, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
-    Authorize.jwt_optional()
-    current_user_id = Authorize.get_jwt_subject()
-    posts = PostCRUD(db).get_posts(page=page)
-    return [get_post_json(post=post, db=db, current_user_id=current_user_id, idea_data=True, user_data=True) for post in posts]
+def get_posts(page: int = 1, Auth: Authenticate = Depends(Authenticate(required=False))):
+    posts = PostCRUD(Auth.db).get_posts(page=page)
+    posts_objs = []
+    for post in posts:
+        post_obj = PostUserWithIdea.from_orm(post)
+        if Auth.current_user_id:
+            post_obj.liked = bool(PostCRUD(Auth.db).get_post_like_by_user_id(
+                post_id=post.id, user_id=Auth.current_user_id))
+        posts_objs.append(post_obj)
+    return posts_objs
 
 
 @router.get('/{post_id}', response_model=PostUserWithIdea)

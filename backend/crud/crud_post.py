@@ -1,6 +1,7 @@
 from typing import List
 from backend.db.base import CRUDBase
-from backend.models.post import KeywordLike, Post, PostComment, PostLike, Keyword
+from backend.models.post import Post, PostComment, PostLike
+from backend.models.keywords import KeywordLike,  Keyword
 from backend.models.idea import Idea, IdeaLike
 from backend.models.files import Image
 from backend.models.user import UserLike

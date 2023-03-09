@@ -54,3 +54,6 @@ class UserModifiableForm(UserModifiable):
 class UserInfo(UserBase, UserUsername):
     id: int
     picture: str | None = None
+
+    class Config:
+        orm_mode = True

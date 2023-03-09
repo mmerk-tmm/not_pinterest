@@ -24,6 +24,8 @@ class Post(Base):
         "images.id"), nullable=False)
     picture = relationship("Image", cascade="all,delete", backref="post")
     url = Column(String, nullable=True)
+    keywords = relationship(
+        "Keyword", secondary="posts_keywords")
 
 
 class PostLike(Base):
@@ -61,24 +63,5 @@ class PostKeyword(Base):
     keyword_id = Column(Integer, ForeignKey("keywords.id"),
                         primary_key=True, nullable=False)
     keyword = relationship("Keyword", foreign_keys=[
-                           keyword_id], backref=backref("posts", cascade="all,delete"))
-    post = relationship(Post, backref=backref(
-        "keywords", cascade="all,delete"))
-
-
-class Keyword(Base):
-    __tablename__ = 'keywords'
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(
-        int(env_config.get('VITE_MAX_KEYWORD_NAME_LENGTH'))), nullable=False)
-
-
-class KeywordLike(Base):
-    __tablename__ = 'keywords_likes'
-
-    user_id = Column(Integer, ForeignKey("users.id"),
-                     primary_key=True, nullable=False)
-    keyword_id = Column(Integer, ForeignKey("keywords.id"),
-                        primary_key=True, nullable=False)
-    keyword = relationship(Keyword, backref=backref(
-        "likes", cascade="all,delete"))
+                           keyword_id])
+    post = relationship(Post, foreign_keys=[post_id])
