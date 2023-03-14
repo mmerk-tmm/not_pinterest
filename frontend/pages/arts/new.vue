@@ -3,7 +3,7 @@
         <div class="new-art-container">
             <form class="editor" @submit.prevent="save" ref="formRef">
                 <div class="column">
-                    <SelectImage />
+                    <SelectImage name="post_image" />
                 </div>
                 <div class="column">
                     <div class="art-info">
@@ -25,8 +25,17 @@
                                 class="info-button"
                                 @click="selectIdeaModal = true"
                             >
-                                Выбрать идею
+                                {{ ideaID !== null ? "Изменить" : "Выбрать" }}
                             </div>
+                            <ModalDialog
+                                :active="selectIdeaModal"
+                                @close="selectIdeaModal = false"
+                            >
+                                <template #header></template>
+                                <template #content>
+                                    <IdeaSelector @select="selectIdea" />
+                                </template>
+                            </ModalDialog>
                         </div>
                     </div>
                 </div>
@@ -68,6 +77,10 @@ const description = ref("");
 const source = ref("");
 const keywords = ref([]);
 const selectIdeaModal = ref(false);
+const selectIdea = (idea) => {
+    selectIdeaModal.value = false;
+    ideaID.value = idea.id;
+};
 const buttonActive = computed(
     () =>
         name.value.length >= MIN_POST_NAME_LENGTH &&
@@ -78,10 +91,22 @@ const buttonActive = computed(
 );
 const formRef = ref(null);
 const save = async () => {
+    console.log(ideaID.value);
     if (!buttonActive.value) {
-        toast.error("Заполните все поля");
+        if (name.value.length < MIN_POST_NAME_LENGTH) {
+            toast.error("Название слишком короткое");
+        } else if (name.value.length > MAX_POST_NAME_LENGTH) {
+            toast.error("Название слишком длинное");
+        } else if (description.value.length > MAX_POST_DESCRIPTION_LENGTH) {
+            toast.error("Описание слишком длинное");
+        } else if (keywords.value.length === 0) {
+            toast.error("Добавьте хотя бы один тег");
+        } else if (!ideaID.value) {
+            toast.error("Выберите идею");
+        }
         return;
     }
+    console.log(formRef.value, "formRef.value");
     var form = new FormData(formRef.value);
     const data = {
         name: name.value,
@@ -92,7 +117,7 @@ const save = async () => {
     form.append("post_data", JSON.stringify(data));
     try {
         const postData = await Service.createPostApiV1IdeasIdeaIdPostPost(
-            ideaID,
+            ideaID.value,
             form
         );
         router.push({

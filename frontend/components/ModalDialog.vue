@@ -173,7 +173,7 @@ onBeforeUnmount(() => {
     }
 
     .modal {
-        // background-color: $tertiary-bg;
+        background-color: $color-gray-roboflow-200;
         max-width: v-bind(width);
         max-height: v-bind(height);
         width: 100%;
@@ -190,6 +190,7 @@ onBeforeUnmount(() => {
 
         .modal-content {
             height: 100%;
+            padding: 10px;
         }
 
         .modal-buttons {

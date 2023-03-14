@@ -12,6 +12,7 @@ from backend.models.user import *
 from backend.models.files import *
 from backend.models.idea import *
 from backend.models.post import *
+from backend.models.keywords import *
 config = context.config
 target_metadata = Base.metadata
 

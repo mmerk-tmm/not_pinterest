@@ -8,9 +8,7 @@
                 {{ idea.description }}
             </div>
         </div>
-        <div class="idea-item__footer">
-            <div class="idea-item__footer__button" @click="select">Выбрать</div>
-        </div>
+        <div class="idea-item_button" @click="select">Выбрать</div>
     </div>
 </template>
 <script setup>
@@ -24,32 +22,33 @@ const { idea } = defineProps({
 <style scoped lang="scss">
 .idea-item {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border: 1px solid $color-gray-roboflow-500;
-    padding: 5px;
-    border-radius: 5px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #e6e6e6;
+    color: $color-text;
+    background-color: $color-gray-roboflow-300;
+    cursor: pointer;
+    &:hover {
+        background-color: $color-gray-roboflow-400;
+    }
     &__content {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
         &__name {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 5px;
         }
         &__description {
-            font-size: 16px;
+            font-size: 14px;
+            color: #666;
         }
     }
-    &__footer {
-        display: flex;
-        justify-content: flex-end;
-        &__button {
-            padding: 5px 10px;
-            border-radius: 5px;
-            background-color: $color-red-roboflow-500;
-            color: white;
-            cursor: pointer;
+    &_button {
+        padding: 5px 10px;
+        border-radius: 5px;
+        background-color: #f5f5f5;
+        &:hover {
+            background-color: #e6e6e6;
         }
     }
 }

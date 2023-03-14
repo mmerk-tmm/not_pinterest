@@ -25,7 +25,9 @@ class Post(Base):
     picture = relationship("Image", cascade="all,delete", backref="post")
     url = Column(String, nullable=True)
     keywords = relationship(
-        "Keyword", secondary="posts_keywords")
+        "Keyword",
+        secondary="posts_keywords",
+        backref=backref('posts', lazy=True))
 
 
 class PostLike(Base):
@@ -63,5 +65,6 @@ class PostKeyword(Base):
     keyword_id = Column(Integer, ForeignKey("keywords.id"),
                         primary_key=True, nullable=False)
     keyword = relationship("Keyword", foreign_keys=[
-                           keyword_id])
-    post = relationship(Post, foreign_keys=[post_id])
+                           keyword_id], overlaps="keywords,posts")
+    post = relationship(Post, foreign_keys=[
+                        post_id], overlaps="keywords,posts")

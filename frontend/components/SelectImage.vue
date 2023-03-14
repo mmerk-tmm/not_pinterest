@@ -93,6 +93,7 @@ export default {
     position: relative;
     overflow: hidden;
     border-radius: 8px;
+    isolation: isolate;
     transition: 2s filter, 2s opacity;
 
     img {

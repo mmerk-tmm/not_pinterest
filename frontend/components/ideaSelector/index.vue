@@ -3,38 +3,68 @@
         <AppInput v-model="searchText" />
         <div class="keywords" v-if="!resultsEmpty">
             <IdeaSelectorItem
-                :keyword="keyword"
-                v-for="keyword in keywords"
-                :key="keyword.id"
+                @click="emit('select', idea)"
+                :idea="idea"
+                v-for="idea in ideas"
+                :key="idea.id"
             />
-            <div class="create-idea" v-if="notResults">
-                <div class="test">
-                    Идея не найдена,
-                    <nuxt-link to="/ideas/new">создайте новую</nuxt-link>
-                </div>
+        </div>
+        <div class="create-idea" v-else>
+            <div class="test">
+                Идея не найдена,
+                <nuxt-link to="/ideas/new" target="_blank">
+                    создайте новую
+                </nuxt-link>
             </div>
         </div>
     </div>
 </template>
 <script setup>
+import { Service } from "~~/client";
+const emit = defineEmits(["select"]);
+const searchText = ref("");
+const ideas = ref([]);
 
-
-const emit = defineEmits(["update:select"]);
-const
+watch(
+    searchText,
+    async (value) => {
+        if (value.length > 0) {
+            const data = await Service.searchIdeasApiV1IdeasSearchGet(value);
+            ideas.value = data;
+        } else {
+            ideas.value = [];
+        }
+    },
+    { immediate: true }
+);
+const resultsEmpty = computed(() => ideas.value.length === 0);
 </script>
 <style lang="scss">
-.keyword-selector {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-
+.topic-selector {
     .keywords {
         display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        border: 1px solid var(--color-gray-roboflow-500);
-        padding: 5px;
-        border-radius: v-bind(borderRadiusString);
+        flex-direction: column;
+        .idea-selector-item {
+            margin-bottom: 10px;
+        }
+    }
+    .create-idea {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+        .test {
+            font-size: 14px;
+            color: #000000;
+            font-weight: 500;
+            line-height: 17px;
+            a {
+                color: #000000;
+                font-weight: 500;
+                line-height: 17px;
+                text-decoration: underline;
+            }
+        }
     }
 }
 </style>
