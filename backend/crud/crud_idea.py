@@ -5,7 +5,7 @@ from backend.models.keywords import Keyword
 
 
 class IdeaCRUD(CRUDBase):
-    def create_idea(self, *, name: str, description: str, user_id: int, keywords: List[str] = []):
+    def create_idea(self, *, name: str, description: str, user_id: int):
 
         return self.create(Idea(name=name, description=description, user_id=user_id))
 

@@ -80,6 +80,8 @@ const sendIdea = async () => {
     padding: 16px 0px;
     justify-content: center;
     display: flex;
+    height: 100%;
+    align-items: center;
 
     .new-idea-container {
         padding: 20px;

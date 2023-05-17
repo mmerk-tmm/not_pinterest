@@ -1,6 +1,10 @@
 <template>
     <div class="topic-selector">
-        <AppInput v-model="searchText" label="Выберите ключевые слова" />
+        <AppInput
+            v-model="searchText"
+            label="Выберите ключевые слова"
+            placeholder="Поиск по тегам"
+        />
         <div class="keywords" v-if="!resultsEmpty">
             <keywordSelectorItem
                 :keyword="keyword"
@@ -20,7 +24,6 @@
                 </div>
             </keywordSelectorItem>
         </div>
-        {{ selectedKeywords }}
     </div>
 </template>
 <script setup>
