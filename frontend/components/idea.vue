@@ -18,7 +18,10 @@
                     </div>
                 </div>
                 <div class="user-meta-column likes" v-if="likeButtonShowed">
-                    <div :class="['like', { active: liked }]" @click="like">
+                    <div
+                        :class="['like', { active: liked }]"
+                        @click.prevent="like"
+                    >
                         <Icon name="material-symbols:favorite" />
                     </div>
                 </div>
@@ -30,9 +33,13 @@
                 {{ idea.description }}
             </div>
             <div class="tags">
-                <div class="tag">Зашлепок</div>
-                <div class="tag">Зашлепок</div>
-                <div class="tag">Зашлепок</div>
+                <div
+                    class="tag"
+                    v-for="keyword in idea.keywords"
+                    :key="keyword.id"
+                >
+                    {{ keyword.name }}
+                </div>
             </div>
         </div>
     </nuxt-link>

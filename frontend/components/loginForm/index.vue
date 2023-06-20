@@ -55,7 +55,7 @@
 <script setup>
 import { useAuthStore } from "~~/stores/auth";
 import { HandleOpenApiError } from "~~/composables/errors";
-import { useToast } from "vue-toastification";
+const { $toast } = useNuxtApp();
 import { routesNames } from "@typed-router";
 const authStore = useAuthStore();
 const runtimeConfig = useRuntimeConfig();
@@ -65,7 +65,6 @@ const { register } = defineProps({
         default: false,
     },
 });
-const toast = useToast();
 const login = ref("");
 const password = ref("");
 const firstName = ref("");
@@ -135,7 +134,7 @@ const loginHandler = async () => {
           )
         : await authStore.loginRequest(login.value, password.value);
     if (error) {
-        toast.error(HandleOpenApiError(error).message);
+        $toast.error(HandleOpenApiError(error).message);
         return;
     }
     const router = useRouter();
@@ -194,6 +193,8 @@ const validateLogin = (value) => {
         .login-button {
             @include flex-center;
             height: 40px;
+            background-color: $color-gray-roboflow-200;
+            border-radius: 5px;
         }
     }
     .bottom-text {

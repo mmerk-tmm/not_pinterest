@@ -56,4 +56,4 @@ def image_id_to_path(image_id: int) -> str:
 
 
 def image_id_to_url(image_id: UUID) -> str:
-    return ''.join([settings.SERVER_LINK, settings.API_V1_STR, settings.UPLOADS_ROUTE, '/images/', str(image_id)])
+    return ''.join([settings.API_V1_STR, settings.UPLOADS_ROUTE, '/images/', str(image_id)])

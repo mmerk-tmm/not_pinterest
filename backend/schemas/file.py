@@ -23,7 +23,9 @@ class ImageLink(BaseModel):
     def validate(cls, v: Image):
         if not v:
             return None
-
+        if isinstance(v, str):
+            return v
         if not isinstance(v, Image):
+
             raise TypeError('ImageLink must be Image (model)')
         return image_id_to_url(v.id)

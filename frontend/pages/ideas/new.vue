@@ -16,6 +16,7 @@
                 :max-length="MAX_IDEA_DESCRIPTION_LENGTH"
                 showWordLimit
             />
+
             <KeywordSelector
                 v-model:selectedKeywords="keywords"
                 class="keyword-selector"
@@ -34,10 +35,9 @@
 
 <script setup>
 import { Service } from "@/client";
-import { useToast } from "vue-toastification";
 
 const router = useRouter();
-const toast = useToast();
+const { $toast } = useNuxtApp();
 const runtimeConfig = useRuntimeConfig();
 const {
     MAX_IDEA_NAME_LENGTH,
@@ -58,17 +58,28 @@ const buttonActive = computed(() => {
         description.value.length <= MAX_IDEA_DESCRIPTION_LENGTH
     );
 });
+const new_keywords = computed(() => {
+    return keywords.value.filter((item) => item.new).map((item) => item.name);
+});
+const keywordsIds = computed(() => {
+    return keywords.value.filter((item) => !item.new).map((item) => item.id);
+});
 const sendIdea = async () => {
-    if (!buttonActive.value) return;
+    if (!buttonActive.value) {
+        $toast.error("Заполните все поля");
+        return;
+    }
     try {
-        await Service.createIdeaApiV1IdeasPost({
+        const new_idea = await Service.createIdeaApiV1IdeasPost({
             name: name.value,
             description: description.value,
+            new_keywords: new_keywords.value,
+            keywords_ids: keywordsIds.value,
         });
         router.push({ path: "/ideas" });
     } catch (error) {
         if (error?.response?.status === 400) {
-            toast.error(HandleOpenApiError(error).message);
+            $toast.error(HandleOpenApiError(error).message);
         } else {
             throw error;
         }

@@ -88,6 +88,7 @@ header {
     width: 100%;
     background: $color-background;
     transition: box-shadow 0.2s;
+    z-index: 10;
 
     .not-logined {
         display: flex;

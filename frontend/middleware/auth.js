@@ -11,7 +11,7 @@ export default defineNuxtRouteMiddleware(async (context) => {
         if (cookie.value) {
             try {
                 const request = await axios.post(
-                    "http://localhost:8000/api/v1/auth/refresh",
+                    "http://api:8000/api/v1/auth/refresh",
                     {
                         withCredentials: true,
                         headers: {

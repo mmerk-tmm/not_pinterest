@@ -33,12 +33,11 @@ def get_posts(page: int = 1, Auth: Authenticate = Depends(Authenticate(required=
 @router.get('/{post_id}', response_model=PostUserWithIdea)
 def get_post(post_id: int, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
     Authorize.jwt_optional()
-    current_user_id = Authorize.get_jwt_subject()
     post = PostCRUD(db).get_post_by_id(post_id=post_id)
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Пост не найден")
-    return get_post_json(post=post, current_user_id=current_user_id, idea_data=True, user_data=True, db=db)
+    return post
 
 
 @router.put('/{post_id}', response_model=PostBase)
@@ -145,12 +144,3 @@ def get_post_comments(page: int, post_id: int, Authorize: AuthJWT = Depends(), d
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Пост не найден")
     return post_cruds.get_comments(post_id=post_id, page=page)
-
-
-@router.get('/last/recommendations', response_model=List[PostBase])
-def get_last_recommendations(page: int, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
-    Authorize.jwt_required()
-    db_user = validate_authorized_user(Authorize, db)
-    post_cruds = PostCRUD(db)
-    return post_cruds.get_last_recommendations(
-        user_id=db_user.id, page=page)

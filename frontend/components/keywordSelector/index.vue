@@ -1,33 +1,45 @@
 <template>
     <div class="topic-selector">
-        <AppInput
-            v-model="searchText"
-            label="Выберите ключевые слова"
-            placeholder="Поиск по тегам"
-        />
-        <div class="keywords" v-if="!resultsEmpty">
+        <div class="keywords search">
+            <AppInput
+                v-model="searchText"
+                label="Выберите ключевые слова"
+                placeholder="Поиск по тегам"
+            />
+            <template v-if="!resultsEmpty">
+                <keywordSelectorItem
+                    :keyword="keyword"
+                    v-for="keyword in keywords"
+                    :key="keyword.id"
+                    @click="selectKeyword(keyword)"
+                    :selectedKeywords="selectedKeywords"
+                    :borderRadiusString="borderRadiusString"
+                />
+                <keywordSelectorItem
+                    v-if="notResults"
+                    :name="searchText"
+                    @click="selectKeyword({ new: true, name: searchText })"
+                >
+                    <div class="icon">
+                        <Icon name="material-symbols:add" />
+                    </div>
+                </keywordSelectorItem>
+            </template>
+        </div>
+        <div class="keywords">
             <keywordSelectorItem
                 :keyword="keyword"
-                v-for="keyword in keywords"
+                v-for="keyword in selectedKeywords"
                 :key="keyword.id"
-                @click="selectKeyword(keyword)"
+                @click="deleteKeyword(keyword)"
                 :selectedKeywords="selectedKeywords"
                 :borderRadiusString="borderRadiusString"
             />
-            <keywordSelectorItem
-                v-if="notResults"
-                :name="searchText"
-                @click="selectKeyword({ new: true, name: searchText })"
-            >
-                <div class="icon">
-                    <Icon name="material-symbols:add" />
-                </div>
-            </keywordSelectorItem>
         </div>
     </div>
 </template>
 <script setup>
-const { searchText, keywords } = useKeywordSearch();
+const { searchText, keywords, clearSearch } = useKeywordSearch();
 const props = defineProps({
     borderRadius: {
         type: Number,
@@ -48,12 +60,20 @@ const notResults = computed(
     () => !resultsEmpty.value && keywords.value.length === 0
 );
 
-const selectedKeywords = ref(props.selectedKeywords);
+const selectedKeywords = computed({
+    get: () => props.selectedKeywords,
+    set: (val) => emit("update:selectedKeywords", val),
+});
 
 const selectKeyword = (keywords) => {
+    clearSearch();
     selectedKeywords.value.push(keywords);
 };
-
+const deleteKeyword = (keyword) => {
+    selectedKeywords.value = selectedKeywords.value.filter(
+        (item) => item.id !== keyword.id
+    );
+};
 watch(selectedKeywords, (val) => {
     emit("update:selectedKeywords", val);
 });
@@ -68,9 +88,11 @@ watch(selectedKeywords, (val) => {
         display: flex;
         gap: 10px;
         flex-wrap: wrap;
-        border: 1px solid var(--color-gray-roboflow-500);
         padding: 5px;
         border-radius: v-bind(borderRadiusString);
+        &.search {
+            border: 1px solid $color-gray-roboflow-500;
+        }
     }
 }
 </style>

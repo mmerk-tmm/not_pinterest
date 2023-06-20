@@ -38,8 +38,21 @@ def create_idea(idea_data: CreateIdea,  Authorize: AuthJWT = Depends(), db: Sess
     if idea_cruds.get_idea_by_name(name=idea_data.name):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Идея с таким именем уже существует")
+    keywords = []
+    for keyword in idea_data.keywords_ids:
+        db_keyword = KeywordCRUD(db).get_keyword_by_id(keyword)
+        if not db_keyword:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="Ключевое слово не найдено")
+        keywords.append(db_keyword)
+    for keyword in idea_data.new_keywords:
+        db_keyword = KeywordCRUD(db).get_keyword_by_name(keyword)
+        if not db_keyword:
+            db_keyword = KeywordCRUD(db).create_keyword(keyword)
+        keywords.append(db_keyword)
+
     db_idea = idea_cruds.create_idea(
-        name=idea_data.name, description=idea_data.description, user_id=current_user_id)
+        name=idea_data.name, description=idea_data.description, user_id=current_user_id, keywords=keywords)
     return db_idea
 
 

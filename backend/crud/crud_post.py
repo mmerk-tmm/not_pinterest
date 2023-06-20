@@ -1,6 +1,6 @@
 from typing import List
 from backend.db.base import CRUDBase
-from backend.models.post import Post, PostComment, PostLike
+from backend.models.post import Post, PostComment, PostKeyword, PostLike
 from backend.models.keywords import KeywordLike,  Keyword
 from backend.models.idea import Idea, IdeaLike
 from backend.models.files import Image
@@ -14,8 +14,8 @@ class PostCRUD(CRUDBase):
         end = page * page_size
         return self.db.query(Post).filter(Post.user_id == user_id).order_by(Post.id.desc()).slice(end-page_size, end).all()
 
-    def create_post(self, title: str, description: str, user_id: int, url: str, idea_id: int, db_picture: Image):
-        return self.create(
+    def create_post(self, title: str, description: str, user_id: int, url: str, idea_id: int, db_picture: Image, keywords: List[Keyword] = None) -> Post:
+        db_post = self.create(
             Post(
                 title=title,
                 url=url,
@@ -25,6 +25,9 @@ class PostCRUD(CRUDBase):
                 image_id=db_picture.id
             )
         )
+        for keyword in keywords:
+            self.create(PostKeyword(post_id=db_post.id, keyword_id=keyword.id))
+        return db_post
 
     def get_post_by_id(self, post_id: int) -> Post | None:
         return self.get(id=post_id, model=Post)

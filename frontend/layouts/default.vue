@@ -1,7 +1,7 @@
 <template>
     <NuxtErrorBoundary @error="handleError">
         <div class="default-layout">
-            <AppHeader v-if="$viewport.isGreaterOrEquals('lg')" />
+            <AppHeader />
 
             <div class="app-content">
                 <slot />

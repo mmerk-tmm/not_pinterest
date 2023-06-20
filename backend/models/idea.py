@@ -1,10 +1,9 @@
 from backend.db.base_class import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
-from sqlalchemy.orm import relationship, scoped_session
+from sqlalchemy.orm import relationship, object_session
 from backend.core.config import env_config
 from sqlalchemy.sql import func
-from backend.db.session import SessionLocal
-session = scoped_session(SessionLocal)
+from backend.models.keywords import Keyword
 
 
 class Idea(Base):
@@ -24,9 +23,16 @@ class Idea(Base):
     user = relationship("User", foreign_keys=[user_id])
 
     @property
+    def keywords(self):
+        if not hasattr(self, '_keywords'):
+            self._keywords = object_session(self).query(Keyword).join(
+                IdeaKeyword, Keyword.id == IdeaKeyword.keyword_id).filter(IdeaKeyword.idea_id == self.id).all()
+        return self._keywords
+
+    @property
     def likes(self):
         if not hasattr(self, '_likes'):
-            self._likes = session.query(
+            self._likes = object_session(self).query(
                 IdeaLike).filter_by(idea_id=self.id).count()
         return self._likes
 

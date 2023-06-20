@@ -20,6 +20,10 @@ export const useKeywordSearch = () => {
             keywords.value = [];
         }
     };
+    const clearSearch = () => {
+        searchText.value = "";
+        keywords.value = [];
+    };
     watch(searchText, getKeywords);
-    return { searchText, keywords };
+    return { searchText, keywords, clearSearch };
 };

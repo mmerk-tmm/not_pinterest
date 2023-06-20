@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 def set_idea_data(idea: Idea, db: Session, user_id: int = None):
     idea_cruds = IdeaCRUD(db)
     idea_obj = idea.as_dict()
-    idea_obj['created'] = idea.time_created.strftime(
+    idea_obj['created'] = idea.created.strftime(
         settings.DATETIME_FORMAT)
     idea_obj['likes'] = idea_cruds.count_idea_likes(idea_id=idea.id)
     idea_obj['user'] = set_picture(idea.user.as_dict(), idea.user.picture)

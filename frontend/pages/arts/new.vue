@@ -1,9 +1,13 @@
 <template>
     <div class="new-art-wrapper">
         <div class="new-art-container">
-            <form class="editor" @submit.prevent="save" ref="formRef">
+            <div class="editor" @submit.prevent="save">
                 <div class="column">
-                    <SelectImage name="post_image" />
+                    <Upload
+                        border-radius="20px"
+                        @file="handlePictureSelect"
+                        :imageUrl="picture"
+                    />
                 </div>
                 <div class="column">
                     <div class="art-info">
@@ -39,7 +43,7 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
             <el-input
                 type="textarea"
                 placeholder="Добавьте описание арта"
@@ -60,17 +64,21 @@
 </template>
 <script setup>
 import { Service } from "@/client";
-import { useToast } from "vue-toastification";
 
 const router = useRouter();
-const toast = useToast();
+const { $toast } = useNuxtApp();
 const runtimeConfig = useRuntimeConfig();
 const {
     MAX_POST_NAME_LENGTH,
     MAX_POST_DESCRIPTION_LENGTH,
     MIN_POST_NAME_LENGTH,
 } = runtimeConfig.public;
-
+const picture = ref(null);
+const pictureBlob = ref(null);
+const handlePictureSelect = (file) => {
+    picture.value = URL.createObjectURL(file);
+    pictureBlob.value = file;
+};
 const name = ref("");
 const ideaID = ref(null);
 const description = ref("");
@@ -91,41 +99,43 @@ const buttonActive = computed(
 );
 const formRef = ref(null);
 const save = async () => {
-    console.log(ideaID.value);
     if (!buttonActive.value) {
         if (name.value.length < MIN_POST_NAME_LENGTH) {
-            toast.error("Название слишком короткое");
+            $toast.error("Название слишком короткое");
         } else if (name.value.length > MAX_POST_NAME_LENGTH) {
-            toast.error("Название слишком длинное");
+            $toast.error("Название слишком длинное");
         } else if (description.value.length > MAX_POST_DESCRIPTION_LENGTH) {
-            toast.error("Описание слишком длинное");
+            $toast.error("Описание слишком длинное");
         } else if (keywords.value.length === 0) {
-            toast.error("Добавьте хотя бы один тег");
+            $toast.error("Добавьте хотя бы один тег");
         } else if (!ideaID.value) {
-            toast.error("Выберите идею");
+            $toast.error("Выберите идею");
         }
         return;
     }
-    console.log(formRef.value, "formRef.value");
-    var form = new FormData(formRef.value);
+    var form = new FormData();
     const data = {
-        name: name.value,
+        title: name.value,
         description: description.value,
-        source: source.value,
-        keywords: keywords.value,
+        url: source.value,
+        keywords: keywords.value.map((keyword) => keyword.name),
     };
     form.append("post_data", JSON.stringify(data));
+    form.append("post_image", pictureBlob.value);
     try {
         const postData = await Service.createPostApiV1IdeasIdeaIdPostPost(
             ideaID.value,
-            form
+            {
+                post_data: data,
+                post_image: pictureBlob.value,
+            }
         );
         router.push({
             name: "arts-id",
             params: { id: postData.id },
         });
     } catch (error) {
-        toast.error("Ошибка при создании арта");
+        $toast.error("Ошибка при создании арта");
     }
 };
 </script>

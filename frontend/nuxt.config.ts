@@ -34,6 +34,7 @@ export default defineNuxtConfig({
         { src: "~/plugins/autoAnimatePlugin.js", mode: `client` },
         { src: "~/plugins/refreshToken.js", mode: `client` },
         { src: "~/plugins/vue-toastification.js", mode: `client` },
+        { src: "~/plugins/api.js" },
     ],
     nitro: {
         devProxy: {

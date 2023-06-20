@@ -31,7 +31,7 @@ const isSelected = computed(() => {
 </script>
 <style lang="scss">
 .topic {
-    background-color: var(--color-gray-roboflow-300);
+    background-color: $color-gray-roboflow-300;
     padding: 5px 10px;
     border-radius: calc(v-bind(borderRadiusString) - 5px);
     display: flex;
@@ -56,7 +56,7 @@ const isSelected = computed(() => {
     svg {
         width: 15px;
         height: 15px;
-        color: var(--color-gray-roboflow-600);
+        color: $color-gray-roboflow-500;
     }
 }
 </style>
