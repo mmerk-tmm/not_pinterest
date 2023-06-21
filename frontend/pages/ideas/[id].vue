@@ -21,6 +21,9 @@
                 :post="post"
             />
         </div>
+        <div class="empty" v-if="idea_data.posts.length == 0">
+            Пока что нет постов
+        </div>
         <div class="load-more" v-if="show_button" @click="getNextPage">
             Загрузить еще
         </div>
@@ -45,6 +48,7 @@ const getNextPage = async () => {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    flex-grow: 1;
     .idea-info {
         @include flex-center;
         flex-direction: column;
@@ -73,6 +77,12 @@ const getNextPage = async () => {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 10px;
+        flex-grow: 1;
+        .empty {
+            @include flex-center;
+            height: 100%;
+            text-align: center;
+        }
     }
     .load-more {
         @include flex-center;

@@ -6,7 +6,7 @@
         "generate": "nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
-        "generate-client-prod": "openapi --input http://localhost:8001/openapi.json --output ./client --client axios",
+        "generate-client-prod": "openapi --input http://localhost:8010/openapi.json --output ./client --client axios",
         "generate-client-dev": "openapi --input http://localhost:8000/openapi.json --output ./client --client axios"
     },
     "devDependencies": {

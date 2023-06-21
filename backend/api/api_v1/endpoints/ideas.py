@@ -18,6 +18,16 @@ from backend.schemas.schemas import CreatePost, PostBase
 router = APIRouter(tags=["Идеи"], prefix="/ideas")
 
 
+@router.get("/search", response_model=List[IdeaWithUserAndLike])
+def search_ideas(
+    query: str, Auth: Authenticate = Depends(Authenticate(required=False))
+):
+    db_ideas = IdeaCRUD(Auth.db).search_ideas(query=query)
+    for db_idea in db_ideas:
+        db_idea.current_user_id = Auth.current_user_id
+    return db_ideas
+
+
 @router.get("/{idea_id}", response_model=IdeaWithPosts)
 def get_idea(
     idea_id: int,
@@ -32,24 +42,6 @@ def get_idea(
     db_idea.current_user_id = Auth.current_user_id
     db_idea.posts_page = page
     return db_idea
-
-
-@router.get("/search", response_model=List[IdeaWithUserAndLike])
-def search_ideas(
-    query: str, Auth: Authenticate = Depends(Authenticate(required=False))
-):
-    db_ideas = IdeaCRUD(Auth.db).search_ideas(query=query)
-    db_ideas_objs = []
-    for db_idea in db_ideas:
-        db_idea_obj = IdeaWithUserAndLike.from_orm(db_idea)
-        if Auth.current_user_id:
-            db_idea_obj.liked = bool(
-                IdeaCRUD(Auth.db).get_idea_like_by_user_id(
-                    idea_id=db_idea.id, user_id=Auth.current_user_id
-                )
-            )
-        db_ideas_objs.append(db_idea_obj)
-    return db_ideas
 
 
 @router.post(
@@ -133,7 +125,8 @@ def like_post(idea_id: int, Auth: Authenticate = Depends(Authenticate())):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Идея не найдена"
         )
-    db_idea = idea_cruds.toggle_like_idea(user_id=Auth.current_user_id, idea_id=idea_id)
+    db_idea = idea_cruds.toggle_like_idea(
+        user_id=Auth.current_user_id, idea_id=idea_id)
     return db_idea
 
 
@@ -143,16 +136,8 @@ def get_ideas(
 ):
     idea_cruds = IdeaCRUD(Auth.db)
     db_ideas = idea_cruds.get_ideas(page=page)
-    db_ideas_objs = []
     for db_idea in db_ideas:
-        db_idea_obj = IdeaWithUserAndLike.from_orm(db_idea)
-        if Auth.current_user_id:
-            db_idea_obj.liked = bool(
-                idea_cruds.get_idea_like_by_user_id(
-                    idea_id=db_idea.id, user_id=Auth.current_user_id
-                )
-            )
-        db_ideas_objs.append(db_idea_obj)
+        db_idea.current_user_id = Auth.current_user_id
     return db_ideas
 
 

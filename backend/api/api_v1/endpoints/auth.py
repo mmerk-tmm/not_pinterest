@@ -67,4 +67,4 @@ def create_user_signup(
     refresh_token = Authorize.create_refresh_token(subject=db_user.id)
     Authorize.set_access_cookies(access_token)
     Authorize.set_refresh_cookies(refresh_token)
-    return db_user.as_dict()
+    return db_user

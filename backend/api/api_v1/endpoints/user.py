@@ -1,10 +1,11 @@
+from typing import List
 from fastapi import Depends, APIRouter, status, UploadFile, File, HTTPException
 from fastapi_jwt_auth import AuthJWT
 from backend.helpers.auth_helper import Authenticate
 from backend.helpers.images import save_image
 from backend.helpers.images import set_picture
 from backend.responses import AUTH_REQUIRED_401, UNAUTHORIZED_401
-from backend.schemas.schemas import UserWithPosts
+from backend.schemas.schemas import PostBase, PostIdBase, UserBase, UserWithPosts
 from backend.schemas.schemas import (
     PersonalInformation,
     PersonalInformationBase,
@@ -37,13 +38,15 @@ def update_user_data(
             detail="неправильное имя пользователя или пароль",
         )
     if UserData.username:
-        db_user_username = user_cruds.get_user_by_username(username=UserData.username)
+        db_user_username = user_cruds.get_user_by_username(
+            username=UserData.username)
         if db_user_username and db_user_username.id != current_user_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="пользователь с таким юзернеймом уже существует",
             )
-    db_user_updated = user_cruds.update_user(user=db_user, new_user_data=UserData)
+    db_user_updated = user_cruds.update_user(
+        user=db_user, new_user_data=UserData)
     db_user_updated.current_user_id = current_user_id
     return db_user_updated
 
@@ -54,7 +57,8 @@ def update_user_data(
 )
 def update_user_avatar(
     Auth: Authenticate = Depends(Authenticate()),
-    userPicture: UploadFile = File(default=False, description="Фото пользователя"),
+    userPicture: UploadFile = File(
+        default=False, description="Фото пользователя"),
 ):
     """Обновление данных пользователя"""
     db_image = save_image(
@@ -106,7 +110,8 @@ def update_user_data(Authorize: AuthJWT = Depends(), db: Session = Depends(get_d
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="неправильное имя пользователя или пароль",
         )
-    personal_information = user_cruds.get_personal_information(user_id=current_user_id)
+    personal_information = user_cruds.get_personal_information(
+        user_id=current_user_id)
     if not personal_information:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -152,3 +157,23 @@ def like_user(user_id: int, Auth: Authenticate = Depends(Authenticate())):
     return UserCRUD(Auth.db).toggle_like_user(
         user_id=user_id, user_liking_id=Auth.current_user.id
     )
+
+
+@router.get("/{user_id}/posts/liked", response_model=List[PostIdBase])
+def get_liked_posts(user_id: int, Auth: Authenticate = Depends(Authenticate()), page: int = 1):
+    db_user = UserCRUD(Auth.db).get_user_by_id(user_id=user_id)
+    if not db_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден"
+        )
+    return PostCRUD(Auth.db).get_liked_posts(user_id=user_id, page=page)
+
+
+@router.get("/{user_id}/followed", response_model=List[UserInfoBase])
+def get_followed_users(user_id: int, Auth: Authenticate = Depends(Authenticate()), page: int = 1):
+    db_user = UserCRUD(Auth.db).get_user_by_id(user_id=user_id)
+    if not db_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден"
+        )
+    return UserCRUD(Auth.db).get_followed_users(user_id=user_id, page=page)

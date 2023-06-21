@@ -11,6 +11,17 @@ class UserCRUD(CRUDBase):
     def get_user_by_id(self, user_id: int) -> User | None:
         return self.db.query(User).filter(User.id == user_id).first()
 
+    def get_followed_users(self, user_id: int, page: int, page_size: int = 30):
+        end = page * page_size
+        return (
+            self.db.query(User)
+            .join(UserLike, UserLike.liked_user_id == User.id)
+            .filter(UserLike.user_id == user_id)
+            .order_by(User.id.desc())
+            .slice(end - page_size, end)
+            .all()
+        )
+
     def toggle_like_user(self, user_id: int, user_liking_id: int):
         like = (
             self.db.query(UserLike)
@@ -24,7 +35,8 @@ class UserCRUD(CRUDBase):
             self.db.commit()
             return False
         else:
-            self.create(UserLike(user_id=user_liking_id, liked_user_id=user_id))
+            self.create(
+                UserLike(user_id=user_liking_id, liked_user_id=user_id))
             self.db.commit()
             return True
 
@@ -33,7 +45,8 @@ class UserCRUD(CRUDBase):
             raise Exception("Update user failed: user is None")
         if userPic and user.picture:
             print("set new picture with deleting old")
-            FileCRUD(self.db).replace_old_picture(model=user, new_picture=userPic)
+            FileCRUD(self.db).replace_old_picture(
+                model=user, new_picture=userPic)
         elif userPic:
             user.picture_id = userPic.id
             print("set new picture without deleting old", user.picture_id)

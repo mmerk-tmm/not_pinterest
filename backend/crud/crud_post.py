@@ -18,6 +18,17 @@ class PostCRUD(CRUDBase):
             .all()
         )
 
+    def get_liked_posts(self, page, user_id, page_size=20):
+        end = page * page_size
+        return (
+            self.db.query(Post)
+            .join(PostLike)
+            .filter(PostLike.user_id == user_id)
+            .order_by(Post.id.desc())
+            .slice(end - page_size, end)
+            .all()
+        )
+
     def create_post(
         self,
         title: str,

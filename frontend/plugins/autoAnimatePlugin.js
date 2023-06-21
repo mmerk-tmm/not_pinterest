@@ -1,11 +1,4 @@
-import * as vt from "vue-toastification";
-import "vue-toastification/dist/index.css";
-
+import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
 export default defineNuxtPlugin((nuxtApp) => {
-    nuxtApp.vueApp.use(vt.default);
-    return {
-        provide: {
-            toast: vt.useToast(),
-        },
-    };
+    nuxtApp.vueApp.use(autoAnimatePlugin);
 });

@@ -1,56 +1,104 @@
 <template>
     <header>
         <template v-if="logined">
-            <nuxt-link class="link" to="/">Главная</nuxt-link>
+            <nuxt-link class="link home" to="/">
+                <span v-if="$viewport.isGreaterOrEquals('md')">Главная</span>
+                <Icon name="mdi:home" v-else />
+            </nuxt-link>
             <div
                 class="link dropdown"
-                @click.self="createToggle = !createToggle"
+                @click="createToggle = !createToggle"
+                ref="createToggleref"
             >
                 Создать
                 <Icon name="mdi:chevron-down" />
                 <div :class="['list', { active: createToggle }]">
-                    <nuxt-link class="item" to="/ideas/new">
+                    <nuxt-link
+                        class="item"
+                        to="/ideas/new"
+                        @click.prevent="createToggle = false"
+                    >
                         Создать идею
                     </nuxt-link>
-                    <nuxt-link class="item" to="/arts/new">
+                    <nuxt-link
+                        class="item"
+                        to="/arts/new"
+                        @click.prevent="createToggle = false"
+                    >
                         Создать арт
                     </nuxt-link>
                 </div>
             </div>
             <nuxt-link class="link" to="/ideas">Идеи</nuxt-link>
-            <div class="search">
-                <div class="icon" v-if="!searchFocused">
+            <div
+                class="button"
+                @click="searchActive = true"
+                v-if="$viewport.isLessThan('lg')"
+            >
+                <Icon name="mdi:magnify" />
+            </div>
+            <div
+                class="search-bg"
+                @click="
+                    searchActive = false;
+                    createToggle = false;
+                "
+                v-if="searchFocused || searchActive || createToggle"
+            />
+            <div
+                :class="[
+                    'search',
+                    {
+                        focused: search && searchFocused && searchActive,
+                    },
+                ]"
+                v-if="$viewport.isGreaterOrEquals('lg') || searchActive"
+            >
+                <div
+                    class="icon"
+                    v-if="$viewport.isGreaterOrEquals('lg') && !searchFocused"
+                >
                     <Icon name="mdi:magnify" />
                 </div>
+
                 <input
                     placeholder="Поиск"
                     type="text"
                     @focus="searchFocused = true"
+                    v-model="search"
                     @blur="searchFocused = false"
                 />
-                <div class="results-list" v-if="searchFocused">adsasdasd</div>
+                <template v-if="search">
+                    <client-only>
+                        <div class="results-list" v-auto-animate>
+                            <SearchItem
+                                v-for="item in results"
+                                :item="item"
+                                @select="
+                                    search = '';
+                                    searchActive = false;
+                                "
+                            />
+                            <div class="empty" v-if="!results.length">
+                                Ничего не найдено
+                            </div>
+                        </div>
+                    </client-only>
+                </template>
             </div>
-            <div class="button">
-                <Icon name="mdi:bell" />
-            </div>
-            <router-link to="/settings" class="button">
-                <Icon name="mdi:account" />
-            </router-link>
-            <div
-                :class="
-                    (['button', 'menu', { mouseDown: menuButtonPushed }],
-                    { active: optionsOpen })
-                "
-                @click="optionsOpen = !optionsOpen"
-                @mousedown="menuButtonPushed = true"
-                @mouseup="menuButtonPushed = false"
+            <nuxt-link
+                class="button avatar"
+                :to="{ name: 'user-id', params: { id: userData.id } }"
             >
-                <Icon name="mdi:chevron-down" />
-            </div>
-            <div class="options" v-if="optionsOpen">
-                <div class="items">
-                    <div class="item" @click="logout">Выйти</div>
-                </div>
+                <img
+                    :src="userData.picture"
+                    alt="avatar"
+                    v-if="userData.picture"
+                />
+                <Icon name="material-symbols:person" v-else />
+            </nuxt-link>
+            <div class="button" @click="logout">
+                <Icon name="material-symbols:logout" />
             </div>
         </template>
         <div class="not-logined" v-else>
@@ -65,8 +113,9 @@
 import { useAuthStore } from "@/stores/auth";
 import { useToast } from "vue-toastification";
 import { storeToRefs } from "pinia";
+import { Service } from "@/client";
 const authStore = useAuthStore();
-const { logined } = storeToRefs(authStore);
+const { logined, userData } = storeToRefs(authStore);
 const toast = useToast();
 
 const logout = () => {
@@ -74,12 +123,43 @@ const logout = () => {
     toast.success("Вы вышли из аккаунта");
 };
 
-const optionsOpen = ref(false);
-const menuButtonPushed = ref(false);
 const searchFocused = ref(false);
 const createToggle = ref(false);
+const route = useRoute();
+watch(
+    () => route.name,
+    () => {
+        searchActive.value = false;
+        createToggle.value = false;
+    }
+);
+
+const search = ref("");
+const results = ref([]);
+const searchActive = ref(false);
+watch(search, async (value) => {
+    if (value.length < 1) {
+        results.value = [];
+        return;
+    }
+    results.value = await Service.searchAllApiV1SearchGet(value);
+});
+watch(searchActive, (value) => {
+    search.value = "";
+});
 </script>
 <style lang="scss">
+.search-bg {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+
+    @include md {
+        display: none;
+    }
+}
 header {
     height: 100%;
     display: flex;
@@ -117,6 +197,13 @@ header {
         font-weight: 600;
         gap: 5px;
         cursor: pointer;
+
+        &.home {
+            svg {
+                width: 24px;
+                height: 24px;
+            }
+        }
 
         svg {
             width: 15px;
@@ -180,8 +267,26 @@ header {
         gap: 10px;
         position: relative;
         margin-inline: 10px;
+        isolation: isolate;
+        z-index: 1;
+
         @include md(true) {
-            display: none;
+            position: fixed;
+            background-color: $color-gray-roboflow-100;
+            width: 100%;
+            left: 0;
+            right: 0;
+            margin-inline: 0;
+            border-radius: 0px;
+            top: 0;
+            padding: 0px 16px;
+            height: 70px;
+        }
+        box-shadow: $elevation-floating;
+        &.focused {
+            @include md {
+                border-radius: 24px 24px 0px 0px;
+            }
         }
         .icon {
             @include flex-center;
@@ -203,9 +308,18 @@ header {
             background-color: $baby-powder;
             left: 0;
             width: 100%;
-            min-height: 400px;
+            min-height: 200px;
             border-radius: 0px 0px 24px 24px;
             padding: 16px;
+            box-shadow: $elevation-floating;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            .empty {
+                @include flex-center;
+                height: 100%;
+            }
         }
     }
 

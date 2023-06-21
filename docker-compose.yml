@@ -37,6 +37,6 @@ services:
     volumes:
       - ./assets:/app/assets
     ports:
-      - 8006:8000
+      - 8010:8000
     networks:
       - app-network

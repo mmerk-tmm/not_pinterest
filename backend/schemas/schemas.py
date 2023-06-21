@@ -144,11 +144,18 @@ class Keyword(KeywordCreate):
         orm_mode = True
 
 
-class PostBase(PostCreateBase):
+class PostIdBase(PostCreateBase):
+    picture: ImageLink
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class PostBase(PostIdBase):
     id: int
     user_id: int
     time_created: datetime
-    picture: ImageLink
     likes_count: int = 0
     liked: bool = False
     keywords: List[Keyword]
@@ -235,6 +242,14 @@ class PostWithIdea(PostBase):
 
 class UserWithPosts(UserInfo):
     posts: List[PostBase]
+
+    class Config:
+        orm_mode = True
+
+
+class AllSearchItems(BaseModel):
+    type: str
+    info: Union[UserInfo, PostIdBase, IdeaWithUser]
 
     class Config:
         orm_mode = True

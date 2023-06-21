@@ -2,12 +2,6 @@
     <div class="ideas-wrapper">
         <div class="headline">
             <div class="text">Идеи</div>
-            <div class="dropdown">
-                <div class="selected">
-                    <div class="selected-text">Избранные</div>
-                    <Icon name="mdi:chevron-down" />
-                </div>
-            </div>
         </div>
         <div class="ideas-container">
             <Idea :idea="idea" v-for="idea in ideas" />

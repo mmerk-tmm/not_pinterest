@@ -30,12 +30,14 @@ class User(Base):
     description = Column(
         String(int(env_config.get("VITE_MAX_DESCRIPTION_LENGTH"))), nullable=True
     )
-    site = Column(String(int(env_config.get("VITE_MAX_SITE_LENGTH"))), nullable=True)
+    site = Column(
+        String(int(env_config.get("VITE_MAX_SITE_LENGTH"))), nullable=True)
     hashed_password = Column(String, index=True, nullable=False)
     is_superuser = Column(Boolean, default=False)
     picture_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("images.id", name="users_picture_id_fkey", ondelete="SET NULL"),
+        ForeignKey("images.id", name="users_picture_id_fkey",
+                   ondelete="SET NULL"),
     )
     picture = relationship(
         "Image", foreign_keys=[picture_id], cascade="all,delete", backref="user_profile"
@@ -46,7 +48,8 @@ class User(Base):
         return (
             object_session(self)
             .query(User)
-            .join(UserLike, UserLike.user_id == self.id)
+            .join(UserLike, UserLike.liked_user_id == self.id)
+            .filter(User.id == self.id)
             .count()
         )
 
@@ -89,7 +92,8 @@ class User(Base):
 class UserLike(Base):
     __tablename__ = "users_likes"
 
-    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"),
+                     primary_key=True, nullable=False)
     liked_user_id = Column(
         Integer, ForeignKey("users.id"), primary_key=True, nullable=False
     )
@@ -131,7 +135,8 @@ class Post(Base):
         Integer, ForeignKey("ideas.id", ondelete="SET NULL"), nullable=True
     )
     idea = relationship("Idea", foreign_keys=[idea_id])
-    image_id = Column(UUID(as_uuid=True), ForeignKey("images.id"), nullable=False)
+    image_id = Column(UUID(as_uuid=True), ForeignKey(
+        "images.id"), nullable=False)
     picture = relationship("Image", cascade="all,delete", backref="post")
     url = Column(String, nullable=True)
     keywords = relationship(
@@ -141,7 +146,8 @@ class Post(Base):
     @property
     def user(self):
         db_user = (
-            object_session(self).query(User).filter(User.id == self.user_id).first()
+            object_session(self).query(User).filter(
+                User.id == self.user_id).first()
         )
         db_user.current_user_id = self.current_user_id
         return db_user
@@ -180,8 +186,10 @@ class Post(Base):
 class PostLike(Base):
     __tablename__ = "posts_likes"
 
-    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True, nullable=False)
-    post_id = Column(Integer, ForeignKey("posts.id"), primary_key=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"),
+                     primary_key=True, nullable=False)
+    post_id = Column(Integer, ForeignKey("posts.id"),
+                     primary_key=True, nullable=False)
     post = relationship(Post, backref=backref("likes", cascade="all,delete"))
 
 
@@ -198,18 +206,22 @@ class PostComment(Base):
     content = Column(
         String(int(env_config.get("VITE_MAX_POST_COMMENT_LENGTH"))), nullable=True
     )
-    post = relationship(Post, foreign_keys=[post_id], overlaps="posts,comments")
-    user = relationship(User, foreign_keys=[user_id], overlaps="users,comments")
+    post = relationship(Post, foreign_keys=[
+                        post_id], overlaps="posts,comments")
+    user = relationship(User, foreign_keys=[
+                        user_id], overlaps="users,comments")
 
 
 class PostKeyword(Base):
     __tablename__ = "posts_keywords"
 
-    post_id = Column(Integer, ForeignKey("posts.id"), primary_key=True, nullable=False)
+    post_id = Column(Integer, ForeignKey("posts.id"),
+                     primary_key=True, nullable=False)
     keyword_id = Column(
         Integer, ForeignKey("keywords.id"), primary_key=True, nullable=False
     )
     keyword = relationship(
         "Keyword", foreign_keys=[keyword_id], overlaps="keywords,posts"
     )
-    post = relationship(Post, foreign_keys=[post_id], overlaps="keywords,posts")
+    post = relationship(Post, foreign_keys=[
+                        post_id], overlaps="keywords,posts")
