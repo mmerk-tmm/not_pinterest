@@ -38,6 +38,16 @@ export const useAuthStore = defineStore({
                 this.logout();
             }
         },
+        async getUserData() {
+            try {
+                const userData = await Service.getUserInfoApiV1UsersMeGet();
+                this.userData = userData;
+                this.logined = true;
+                return userData;
+            } catch (error) {
+                this.logout();
+            }
+        },
         async logoutRequest() {
             try {
                 await Service.logoutApiV1AuthLogoutDelete();

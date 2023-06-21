@@ -89,7 +89,9 @@ header {
     background: $color-background;
     transition: box-shadow 0.2s;
     z-index: 10;
-
+    @include md(true) {
+        padding: 0px;
+    }
     .not-logined {
         display: flex;
         gap: 5px;
@@ -178,7 +180,9 @@ header {
         gap: 10px;
         position: relative;
         margin-inline: 10px;
-
+        @include md(true) {
+            display: none;
+        }
         .icon {
             @include flex-center;
 

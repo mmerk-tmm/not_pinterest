@@ -1,20 +1,33 @@
 from typing import List
 from backend.db.base import CRUDBase
-from backend.models.post import Post, PostComment, PostKeyword, PostLike
-from backend.models.keywords import KeywordLike,  Keyword
+from backend.models.keywords import KeywordLike, Keyword
 from backend.models.idea import Idea, IdeaLike
 from backend.models.files import Image
-from backend.models.user import UserLike
+from backend.models.user import UserLike, Post, PostComment, PostKeyword, PostLike
 from sqlalchemy import or_
 
 
 class PostCRUD(CRUDBase):
-
     def get_user_posts(self, page, user_id, page_size=20):
         end = page * page_size
-        return self.db.query(Post).filter(Post.user_id == user_id).order_by(Post.id.desc()).slice(end-page_size, end).all()
+        return (
+            self.db.query(Post)
+            .filter(Post.user_id == user_id)
+            .order_by(Post.id.desc())
+            .slice(end - page_size, end)
+            .all()
+        )
 
-    def create_post(self, title: str, description: str, user_id: int, url: str, idea_id: int, db_picture: Image, keywords: List[Keyword] = None) -> Post:
+    def create_post(
+        self,
+        title: str,
+        description: str,
+        user_id: int,
+        url: str,
+        idea_id: int,
+        db_picture: Image,
+        keywords: List[Keyword] = None,
+    ) -> Post:
         db_post = self.create(
             Post(
                 title=title,
@@ -22,7 +35,7 @@ class PostCRUD(CRUDBase):
                 description=description,
                 user_id=user_id,
                 idea_id=idea_id,
-                image_id=db_picture.id
+                image_id=db_picture.id,
             )
         )
         for keyword in keywords:
@@ -34,11 +47,19 @@ class PostCRUD(CRUDBase):
 
     def get_posts(self, page, page_size=20) -> List[Post]:
         end = page * page_size
-        return self.db.query(Post).order_by(Post.id.desc()).slice(end-page_size, end).all()
+        return (
+            self.db.query(Post)
+            .order_by(Post.id.desc())
+            .slice(end - page_size, end)
+            .all()
+        )
 
     def get_post_like_by_user_id(self, user_id: int, post_id: int):
-        return self.db.query(PostLike).filter(
-            PostLike.post_id == post_id and PostLike.user_id == user_id).first()
+        return (
+            self.db.query(PostLike)
+            .filter(PostLike.post_id == post_id and PostLike.user_id == user_id)
+            .first()
+        )
 
     def count_post_likes(self, post_id: int):
         return self.db.query(PostLike).filter(PostLike.post_id == post_id).count()
@@ -53,12 +74,24 @@ class PostCRUD(CRUDBase):
             return True
 
     def search_idea(self, name: str, limit: int = 10):
-        return self.db.query(Idea).filter(Idea.name.like("%{}%".format(name))).limit(limit).all()
+        return (
+            self.db.query(Idea)
+            .filter(Idea.name.like("%{}%".format(name)))
+            .limit(limit)
+            .all()
+        )
 
     def search_keywords(self, name: str, limit: int = 10):
-        return self.db.query(Keyword).filter(Keyword.name.like("%{}%".format(name))).limit(limit).all()
+        return (
+            self.db.query(Keyword)
+            .filter(Keyword.name.like("%{}%".format(name)))
+            .limit(limit)
+            .all()
+        )
 
-    def update_post(self, db_post: Post, title: str, description: str, url: str):
+    def update_post(
+        self, db_post: Post, title: str, description: str, url: str
+    ) -> Post:
         db_post.title = title
         db_post.description = description
         db_post.url = url
@@ -72,8 +105,27 @@ class PostCRUD(CRUDBase):
 
     def get_comments(self, post_id, page, page_size=10):
         end = page * page_size
-        return self.db.query(PostComment).filter(PostComment.post_id == post_id).order_by(PostComment.id.desc()).slice(end-page_size, end).all()
+        return (
+            self.db.query(PostComment)
+            .filter(PostComment.post_id == post_id)
+            .order_by(PostComment.id.desc())
+            .slice(end - page_size, end)
+            .all()
+        )
 
     def get_last_recommendations(self, user_id, page, page_size=10):
-        end = page*page_size
-        return self.db.query(Post).join(IdeaLike, UserLike, KeywordLike).filter(or_(IdeaLike.user_id == user_id, UserLike.user_id == user_id, KeywordLike.user_id == user_id)).order_by(Post.id.desc()).slice(end-page_size, end).all()
+        end = page * page_size
+        return (
+            self.db.query(Post)
+            .join(IdeaLike, UserLike, KeywordLike)
+            .filter(
+                or_(
+                    IdeaLike.user_id == user_id,
+                    UserLike.user_id == user_id,
+                    KeywordLike.user_id == user_id,
+                )
+            )
+            .order_by(Post.id.desc())
+            .slice(end - page_size, end)
+            .all()
+        )

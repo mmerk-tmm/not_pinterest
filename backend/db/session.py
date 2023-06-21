@@ -7,12 +7,9 @@ from backend.models.user import *
 from backend.models.files import *
 from backend.models.idea import *
 from backend.models.keywords import *
-from backend.models.post import *
 
 
-engine = create_engine(  # 2
-    settings.DATABASE_URI,
-)
+engine = create_engine(settings.DATABASE_URI)
 
 if not database_exists(engine.url):
     create_database(engine.url)
@@ -20,5 +17,4 @@ if not database_exists(engine.url):
 Base.metadata.create_all(engine)
 
 
-SessionLocal = sessionmaker(
-    autocommit=False, autoflush=False, bind=engine)  # 4
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)  # 4

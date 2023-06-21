@@ -179,6 +179,10 @@ const save = async () => {
             grid-template-columns: 200px 1fr;
             gap: 10px;
 
+            @include lg(true) {
+                grid-template-columns: 1fr;
+            }
+
             .column {
                 display: flex;
                 flex-direction: column;

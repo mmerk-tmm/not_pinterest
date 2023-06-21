@@ -28,10 +28,24 @@ class Authenticate:
         self.current_user = None
 
         if self.required:
-            Authorize.jwt_required()
+            try:
+                Authorize.jwt_required()
+                current_user_id = Authorize.get_jwt_subject()
+            except:
+                if self.required:
+                    raise HTTPException(
+                        status_code=403,
+                        detail="Необходима авторизация"
+                    )
+                else:
+                    return self
         else:
-            Authorize.jwt_optional()
-        current_user_id = Authorize.get_jwt_subject()
+            try:
+                Authorize.jwt_optional()
+                current_user_id = Authorize.get_jwt_subject()
+            except:
+                current_user_id = None
+
         if not current_user_id and not self.required:
             return self
         db_user = UserCRUD(db).get_user_by_id(user_id=current_user_id)

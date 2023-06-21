@@ -139,7 +139,7 @@ const loginHandler = async () => {
     }
     const router = useRouter();
     router.push({
-        name: register ? routesNames.setupGenres : routesNames.settings.profile,
+        name: routesNames.index,
     });
 };
 const validateLogin = (value) => {
@@ -195,6 +195,7 @@ const validateLogin = (value) => {
             height: 40px;
             background-color: $color-gray-roboflow-200;
             border-radius: 5px;
+            cursor: pointer;
         }
     }
     .bottom-text {
