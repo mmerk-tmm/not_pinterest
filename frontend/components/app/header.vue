@@ -111,16 +111,15 @@
 </template>
 <script setup>
 import { useAuthStore } from "@/stores/auth";
-import { useToast } from "vue-toastification";
 import { storeToRefs } from "pinia";
 import { Service } from "@/client";
 const authStore = useAuthStore();
 const { logined, userData } = storeToRefs(authStore);
-const toast = useToast();
+const { $toast } = useNuxtApp();
 
 const logout = () => {
     authStore.logout();
-    toast.success("Вы вышли из аккаунта");
+    $toast.success("Вы вышли из аккаунта");
 };
 
 const searchFocused = ref(false);
